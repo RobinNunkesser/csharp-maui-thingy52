@@ -1,4 +1,4 @@
-﻿namespace Thingy52;
+namespace Thingy52;
 
 public partial class AppShell : Shell
 {
