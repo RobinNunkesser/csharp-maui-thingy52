@@ -86,11 +86,18 @@
 	  <MauiXaml Update="Tabs\Environment\EnvironmentPage.xaml">
 	    <SubType>Designer</SubType>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\ConnectionPage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Update="Tabs\Environment\EnvironmentPage.xaml.cs">
 	    <DependentUpon>EnvironmentPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Pages\ConnectionPage.xaml.cs">
+	    <DependentUpon>ConnectionPage.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
 	</ItemGroup>

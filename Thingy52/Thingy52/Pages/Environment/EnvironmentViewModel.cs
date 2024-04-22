@@ -41,6 +41,7 @@ public class EnvironmentViewModel
                         $"Scan Result: {result.Rssi} {result.Peripheral} {result.AdvertisementData}");
                     if (result.Peripheral.Name is not "Thingy") continue;
                     this.StopScan();
+                    // await this.Navigation.Navigate("Sensors", ("Peripheral", result.Peripheral));
                 }
             }
 

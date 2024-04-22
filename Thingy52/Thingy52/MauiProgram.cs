@@ -20,8 +20,10 @@ public static class MauiProgram
     static MauiAppBuilder RegisterAppServices(this MauiAppBuilder builder) 
     {
         builder.Services.AddBluetoothLE();
-        builder.Services.AddSingleton<EnvironmentPage>();
-        builder.Services.AddSingleton<EnvironmentViewModel>();
+        builder.Services.AddTransient<ConnectionPage>();
+        builder.Services.AddTransient<ConnectionViewModel>();
+        builder.Services.AddTransient<EnvironmentPage>();
+        builder.Services.AddTransient<EnvironmentViewModel>();
         return builder;
     }
     

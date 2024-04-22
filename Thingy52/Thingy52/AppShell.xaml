@@ -7,23 +7,11 @@
     Shell.FlyoutBehavior="Flyout"
     Title="Thingy52">
 
-    <FlyoutItem Title="Environment"
-                Icon="eco.png">
-        <Tab>
+    
             <ShellContent
-                Title="Environment"
-                ContentTemplate="{DataTemplate local:EnvironmentPage}"
-                Route="EnvironmentPage" />
-        </Tab>
-    </FlyoutItem>
-    <FlyoutItem Title="Home"
-                Icon="home.png">
-        <Tab>
-            <ShellContent
-                Title="Home"
-                ContentTemplate="{DataTemplate local:MainPage}"
-                Route="MainPage" />
-        </Tab>
-    </FlyoutItem>
+                Title="Connecting..."
+                ContentTemplate="{DataTemplate local:ConnectionPage}"
+                Route="ConnectionPage" />
+    
     
 </Shell>
