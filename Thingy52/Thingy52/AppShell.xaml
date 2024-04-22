@@ -4,12 +4,26 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Thingy52"
-    Shell.FlyoutBehavior="Disabled"
+    Shell.FlyoutBehavior="Flyout"
     Title="Thingy52">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-
+    <FlyoutItem Title="Environment"
+                Icon="home.png">
+        <Tab>
+            <ShellContent
+                Title="Environment"
+                ContentTemplate="{DataTemplate local:EnvironmentPage}"
+                Route="EnvironmentPage" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="Home"
+                Icon="home.png">
+        <Tab>
+            <ShellContent
+                Title="Home"
+                ContentTemplate="{DataTemplate local:MainPage}"
+                Route="MainPage" />
+        </Tab>
+    </FlyoutItem>
+    
 </Shell>

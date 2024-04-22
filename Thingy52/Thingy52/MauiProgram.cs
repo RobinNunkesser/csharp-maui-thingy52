@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Shiny;
 
 namespace Thingy52;
 
@@ -9,6 +10,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseShiny()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -19,6 +21,16 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
+        AddServices(builder);
+        
+        
         return builder.Build();
+    }
+
+    private static void AddServices(this MauiAppBuilder builder)
+    {
+        builder.Services.AddBluetoothLE();
+        builder.Services.AddSingleton<EnvironmentPage>();
+        builder.Services.AddSingleton<EnvironmentViewModel>();
     }
 }
