@@ -65,17 +65,9 @@
 	<ItemGroup Condition="'$(Configuration)' == 'Release'">
 		<TrimmerRootDescriptor Include="Linker.xml" />
     </ItemGroup>	
-
-	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
-		<CustomEntitlements Include="com.apple.security.app-sandbox" Type="boolean" Value="true" />
-		<CustomEntitlements Include="com.apple.security.get-task-allow" Type="boolean" Value="true" />
-		<CustomEntitlements Include="com.apple.security.network.client" Type="boolean" Value="true" />	
-	</ItemGroup>
 	
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
 		<BundleResource Include="Platforms\iOS\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
-		
-		<CustomEntitlements Include="keychain-access-groups" Type="StringArray" Value="%24(AppIdentifierPrefix)de.hshl.isd.thingy" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -85,9 +77,6 @@
 		<MauiImage Include="Resources\Images\*" />
 		<MauiFont Include="Resources\Fonts\*" />
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-		<MauiAsset Include="appsettings.json" LogicalName="appsettings.json" />
-		<MauiAsset Include="appsettings.android.json" LogicalName="appsettings.android.json" />
-		<MauiAsset Include="appsettings.apple.json" LogicalName="appsettings.apple.json" />
 	</ItemGroup>
 
 	<ItemGroup>
