@@ -7,20 +7,22 @@ namespace Thingy52;
 
 public class ConnectionViewModel
 {
-    private readonly IBleManager bleManager;
-    IDisposable? _scanSub;
+    private readonly IBleManager _bleManager;
+    private readonly Services.INavigationService _navigationService;
+    private IDisposable? _scanSub;
 
-    public ConnectionViewModel(IBleManager bleManager)
+    public ConnectionViewModel(IBleManager bleManager, Services.INavigationService navigationService)
     {
-        this.bleManager = bleManager;
+        this._bleManager = bleManager;
+        _navigationService = navigationService;
         Scan();
     }
 
     private async void Scan()
     {
-        this.IsScanning = bleManager?.IsScanning ?? false;
+        IsScanning = _bleManager?.IsScanning ?? false;
         
-        if (bleManager == null)
+        if (_bleManager == null)
         {
             // handle            
             return;
@@ -35,18 +37,23 @@ public class ConnectionViewModel
 
             async void OnNextScanResults(IList<ScanResult> results)
             {
-                //await Shell.Current.GoToAsync($"/EnvironmentPage");
-                //await Shell.Current.GoToAsync($"//EnvironmentPage?Peripheral={result.Peripheral}");
                 foreach (var result in results)
                 {
                    // TODO: Search for service id instead of peripheral name
                     if (result.Peripheral.Name is not "Thingy") continue;
-                    this.StopScan();
-                    // await this.Navigation.Navigate("Sensors", ("Peripheral", result.Peripheral));
+                    StopScan();
+
+                    MainThread.BeginInvokeOnMainThread(NavigateToEnvironment);
+                    continue;
+
+                    async void NavigateToEnvironment()
+                    {
+                        await _navigationService.NavigateToAsync("EnvironmentPage", new Dictionary<string, object>() { { "Peripheral", result.Peripheral } });
+                    }
                 }
             }
 
-            this._scanSub = bleManager
+            this._scanSub = _bleManager
                 .Scan()
                 .Buffer(TimeSpan.FromSeconds(1))
                 .Where(x => x?.Any() ?? false)

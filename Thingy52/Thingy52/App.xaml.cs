@@ -6,11 +6,11 @@ namespace Thingy52;
 public partial class App : Application
 {
 	private IBleManager bleManager;
-	public App(IBleManager bleManager)
+	public App(IBleManager bleManager, Services.INavigationService navigationService)
 	{
 		InitializeComponent();
 		this.bleManager = bleManager;
-		MainPage = new AppShell();
+		MainPage = new AppShell(navigationService);
 	}
     
 	protected override async void OnStart()

@@ -1,4 +1,6 @@
 ﻿
+using Thingy52.Services;
+
 namespace Thingy52;
 
 
@@ -19,6 +21,7 @@ public static class MauiProgram
 
     static MauiAppBuilder RegisterAppServices(this MauiAppBuilder builder) 
     {
+        builder.Services.AddSingleton<Services.INavigationService, MauiNavigationService>();
         builder.Services.AddBluetoothLE();
         builder.Services.AddTransient<ConnectionPage>();
         builder.Services.AddTransient<ConnectionViewModel>();
