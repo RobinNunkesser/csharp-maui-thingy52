@@ -1,27 +1,33 @@
-﻿
-using Thingy52.Services;
+﻿using Thingy52.Services;
+using Thingy52.Services.Thingy;
+using INavigationService = Thingy52.Services.INavigationService;
 
 namespace Thingy52;
 
-
 public static class MauiProgram
 {
-    public static MauiApp CreateMauiApp() => MauiApp
-        .CreateBuilder()
-        .UseMauiApp<App>()
-        .UseShiny()
-        .ConfigureFonts(fonts =>
-        {
-            fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-        })
-        .RegisterAppServices()
-        .Build();
-
-
-    static MauiAppBuilder RegisterAppServices(this MauiAppBuilder builder) 
+    public static MauiApp CreateMauiApp()
     {
-        builder.Services.AddSingleton<Services.INavigationService, MauiNavigationService>();
+        return MauiApp
+            .CreateBuilder()
+            .UseMauiApp<App>()
+            .UseShiny()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            })
+            .RegisterAppServices()
+            .Build();
+    }
+
+
+    private static MauiAppBuilder RegisterAppServices(
+        this MauiAppBuilder builder)
+    {
+        builder.Services
+            .AddSingleton<INavigationService, MauiNavigationService>();
+        builder.Services.AddSingleton<IThingyService, ThingyService>();
         builder.Services.AddBluetoothLE();
         builder.Services.AddTransient<ConnectionPage>();
         builder.Services.AddTransient<ConnectionViewModel>();
@@ -29,5 +35,4 @@ public static class MauiProgram
         builder.Services.AddTransient<EnvironmentViewModel>();
         return builder;
     }
-    
 }

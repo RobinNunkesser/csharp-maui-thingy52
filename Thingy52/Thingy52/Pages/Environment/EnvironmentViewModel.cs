@@ -1,32 +1,34 @@
 using System.Diagnostics;
 using Shiny.BluetoothLE;
+using Thingy52.Services.Thingy;
 
 namespace Thingy52;
 
-public class EnvironmentViewModel : IQueryAttributable
+public class EnvironmentViewModel
 {
     private readonly IBleManager _bleManager;
+    private readonly IThingyService _thingyService;
 
 
-    public EnvironmentViewModel(IBleManager bleManager)
+    public EnvironmentViewModel(IBleManager bleManager,
+        IThingyService thingyService)
     {
         _bleManager = bleManager;
+        _thingyService = thingyService;
+        //_thingyService.BatteryService().ContinueWith(SetData);
+        //ReadServices();
     }
 
-    public int Test { get; set; }
-    public IPeripheral? Peripheral { get; set; }
     public byte BatteryLevel { get; }
 
-
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    private void SetData(Task<byte> obj)
     {
-        Peripheral = query["Peripheral"] as IPeripheral;
-        ReadServices();
+        Debug.WriteLine(obj.Result);
     }
 
     private void ReadServices()
     {
-        Peripheral?
+        _thingyService.Thingy?
             .WithConnectIf()
             .Select(x => x.GetServices())
             .Switch()
