@@ -79,7 +79,7 @@
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" Condition="'$(Configuration)' == 'Debug'"/>
         <PackageReference Include="Shiny.BluetoothLE" version="3.3.3"/>
-        <PackageReference Include="Shiny.Hosting.Maui" Version="3.3.3" />
+        <PackageReference Include="Shiny.Hosting.Maui" Version="3.3.3"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -87,6 +87,15 @@
             <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Pages\ConnectionPage.xaml">
+            <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="Pages\Motion\MotionPage.xaml">
+            <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="Pages\Sound\SoundPage.xaml">
+            <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="Pages\UI\UIPage.xaml">
             <SubType>Designer</SubType>
         </MauiXaml>
     </ItemGroup>
@@ -98,6 +107,18 @@
         </Compile>
         <Compile Update="Pages\ConnectionPage.xaml.cs">
             <DependentUpon>ConnectionPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\Motion\MotionPage.xaml.cs">
+            <DependentUpon>MotionPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\Sound\SoundPage.xaml.cs">
+            <DependentUpon>SoundPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\UI\UIPage.xaml.cs">
+            <DependentUpon>UIPage.xaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
     </ItemGroup>

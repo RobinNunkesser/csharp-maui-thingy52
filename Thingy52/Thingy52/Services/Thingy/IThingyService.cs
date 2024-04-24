@@ -10,4 +10,6 @@ public interface IThingyService
 
     Task GetTemperatureNotifications(
         Action<BleCharacteristicResult> TemperatureUpdate);
+
+    void ContinueWith(Action? action);
 }

@@ -7,6 +7,8 @@ public class ThingyService : IThingyService
 {
     private IPeripheral? _thingy;
 
+    private Action? ContinueAction { get; set; }
+
     public IPeripheral? Thingy
     {
         get => _thingy;
@@ -14,6 +16,7 @@ public class ThingyService : IThingyService
         {
             if (value == null || value == _thingy) return;
             _thingy = value;
+            ContinueAction?.Invoke();
         }
     }
 
@@ -54,6 +57,11 @@ public class ThingyService : IThingyService
             Thingy!.NotifyCharacteristic(characteristic)
                 .Subscribe(TemperatureUpdate);
         }
+    }
+
+    public void ContinueWith(Action? action)
+    {
+        ContinueAction = action;
     }
 
     private async Task ConnectIfNotConnected()

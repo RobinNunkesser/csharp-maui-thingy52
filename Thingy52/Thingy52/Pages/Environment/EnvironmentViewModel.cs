@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Shiny.BluetoothLE;
 using Thingy52.Services.Thingy;
 
@@ -21,15 +20,7 @@ public class EnvironmentViewModel : INotifyPropertyChanged
     {
         _bleManager = bleManager;
         _thingyService = thingyService;
-        //TODO: Not best practice to call async in constructor
-        Task.Run(async () =>
-        {
-            var batteryLevel = await _thingyService.ReadBatteryLevel();
-            BatteryLevel = $"{batteryLevel} %";
-
-            await _thingyService.GetTemperatureNotifications(
-                TemperatureObserver);
-        });
+        _thingyService.ContinueWith(QueryCharacteristics);
     }
 
     public byte Temperature
@@ -45,6 +36,15 @@ public class EnvironmentViewModel : INotifyPropertyChanged
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    private async void QueryCharacteristics()
+    {
+        var batteryLevel = await _thingyService.ReadBatteryLevel();
+        BatteryLevel = $"{batteryLevel} %";
+
+        await _thingyService.GetTemperatureNotifications(
+            TemperatureObserver);
+    }
 
     private void TemperatureObserver(BleCharacteristicResult result)
     {

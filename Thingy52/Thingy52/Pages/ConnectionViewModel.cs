@@ -51,7 +51,7 @@ public class ConnectionViewModel
                     async void NavigateToEnvironment()
                     {
                         await _navigationService.NavigateToAsync(
-                            "EnvironmentPage");
+                            "//EnvironmentPage");
                     }
                 }
             }

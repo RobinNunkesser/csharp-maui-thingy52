@@ -1,14 +1,16 @@
+using Thingy52.Services;
+
 namespace Thingy52;
 
 public partial class AppShell : Shell
 {
-    private readonly Services.INavigationService _navigationService;
+    private readonly INavigationService _navigationService;
 
-    public AppShell(Services.INavigationService navigationService)
+    public AppShell(INavigationService navigationService)
     {
         _navigationService = navigationService;
 
-        AppShell.InitializeRouting();
+        InitializeRouting();
         InitializeComponent();
     }
 
@@ -16,14 +18,11 @@ public partial class AppShell : Shell
     {
         base.OnHandlerChanged();
 
-        if (Handler is not null)
-        {
-            await _navigationService.InitializeAsync();
-        }
+        if (Handler is not null) await _navigationService.InitializeAsync();
     }
 
     private static void InitializeRouting()
     {
-        Routing.RegisterRoute("EnvironmentPage", typeof(EnvironmentPage));
+        Routing.RegisterRoute("ConnectionPage", typeof(ConnectionPage));
     }
 }

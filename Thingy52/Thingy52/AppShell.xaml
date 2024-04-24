@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <Shell
     x:Class="Thingy52.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -6,12 +7,41 @@
     xmlns:local="clr-namespace:Thingy52"
     Shell.FlyoutBehavior="Flyout"
     Title="Thingy52">
-
-    
+    <FlyoutItem Title="Environment"
+                Icon="sunny.png">
+        <Tab>
             <ShellContent
-                Title="Connecting..."
-                ContentTemplate="{DataTemplate local:ConnectionPage}"
-                Route="ConnectionPage" />
-    
-    
+                Title="Environment"
+                ContentTemplate="{DataTemplate local:EnvironmentPage}"
+                Route="EnvironmentPage" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="UI"
+                Icon="grid_view.png">
+        <Tab>
+            <ShellContent
+                Title="UI"
+                ContentTemplate="{DataTemplate local:UIPage}"
+                Route="UIPage" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="Motion"
+                Icon="open_with.png">
+        <Tab>
+            <ShellContent
+                Title="Motion"
+                ContentTemplate="{DataTemplate local:MotionPage}"
+                Route="MotionPage" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="Sound"
+                Icon="volume_up.png">
+        <Tab>
+            <ShellContent
+                Title="Sound"
+                ContentTemplate="{DataTemplate local:SoundPage}"
+                Route="SoundPage" />
+        </Tab>
+    </FlyoutItem>
+
 </Shell>
