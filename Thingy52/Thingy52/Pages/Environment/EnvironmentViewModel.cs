@@ -1,13 +1,19 @@
-using System.Diagnostics;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Shiny.BluetoothLE;
 using Thingy52.Services.Thingy;
 
 namespace Thingy52;
 
-public class EnvironmentViewModel
+public class EnvironmentViewModel : INotifyPropertyChanged
 {
     private readonly IBleManager _bleManager;
     private readonly IThingyService _thingyService;
+
+    private string _batteryLevel = "?";
+
+    private byte _temperature;
 
 
     public EnvironmentViewModel(IBleManager bleManager,
@@ -15,29 +21,49 @@ public class EnvironmentViewModel
     {
         _bleManager = bleManager;
         _thingyService = thingyService;
-        //_thingyService.BatteryService().ContinueWith(SetData);
-        //ReadServices();
+        //TODO: Not best practice to call async in constructor
+        Task.Run(async () =>
+        {
+            var batteryLevel = await _thingyService.ReadBatteryLevel();
+            BatteryLevel = $"{batteryLevel} %";
+
+            await _thingyService.GetTemperatureNotifications(
+                TemperatureObserver);
+        });
     }
 
-    public byte BatteryLevel { get; }
-
-    private void SetData(Task<byte> obj)
+    public byte Temperature
     {
-        Debug.WriteLine(obj.Result);
+        get => _temperature;
+        set => SetField(ref _temperature, value);
     }
 
-    private void ReadServices()
+    public string BatteryLevel
     {
-        _thingyService.Thingy?
-            .WithConnectIf()
-            .Select(x => x.GetServices())
-            .Switch()
-            .Subscribe(OnServicesResult,
-                ex => Debug.WriteLine((string?)ex.ToString()));
+        get => _batteryLevel;
+        set => SetField(ref _batteryLevel, value);
     }
 
-    private void OnServicesResult(IReadOnlyList<BleServiceInfo> obj)
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private void TemperatureObserver(BleCharacteristicResult result)
     {
-        throw new NotImplementedException();
+        Temperature = result.Data[0];
+    }
+
+    protected virtual void OnPropertyChanged(
+        [CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this,
+            new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetField<T>(ref T field, T value,
+        [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
     }
 }

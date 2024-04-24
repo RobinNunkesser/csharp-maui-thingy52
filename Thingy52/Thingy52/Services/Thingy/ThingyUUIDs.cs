@@ -2,36 +2,42 @@ namespace Thingy52.Services.Thingy;
 
 public static class ThingyUUIDs
 {
-    public const string ThingyConfigurationUuid =
+    public const string ThingyConfigurationService =
         "EF680100-9B35-4933-9B10-52FFA9740042";
 
-    public const string WeatherStationUuid =
+    public const string WeatherStationService =
         "EF680200-9B35-4933-9B10-52FFA9740042";
 
-    public const string UIuuid =
+    public const string TemperatureCharacteristic =
+        "ef680201-9b35-4933-9b10-52ffa9740042";
+
+    public const string UIService =
         "EF680300-9B35-4933-9B10-52FFA9740042";
 
-    public const string ThingyMotionUuid =
+    public const string ThingyMotionService =
         "EF680400-9B35-4933-9B10-52FFA9740042";
 
-    public const string ThingySoundUuid =
+    public const string ThingySoundService =
         "EF680500-9B35-4933-9B10-52FFA9740042";
 
-    public const string BatteryUuid =
+    public const string BatteryService =
         "180F";
 
-    public const string SecureDFUuuid =
+    public const string BatteryLevelCharacteristic =
+        "2a19";
+
+    public const string SecureDFUService =
         "FE59";
 
     public static readonly Dictionary<string, string> Description =
         new()
         {
-            { ThingyConfigurationUuid, "Thingy configuration service" },
-            { WeatherStationUuid, "Weather station service" },
-            { UIuuid, "UI service" },
-            { ThingyMotionUuid, "Thingy motion service" },
-            { ThingySoundUuid, "Thingy sound service" },
-            { BatteryUuid, "Battery service" },
-            { SecureDFUuuid, "Secure DFU Service" }
+            { ThingyConfigurationService, "Thingy configuration service" },
+            { WeatherStationService, "Weather station service" },
+            { UIService, "UI service" },
+            { ThingyMotionService, "Thingy motion service" },
+            { ThingySoundService, "Thingy sound service" },
+            { BatteryService, "Battery service" },
+            { SecureDFUService, "Secure DFU Service" }
         };
 }

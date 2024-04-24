@@ -1,105 +1,111 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFrameworks>$(TargetFrameworks);net8.0-ios</TargetFrameworks>
-		<TargetFrameworks>$(TargetFrameworks);net8.0-android</TargetFrameworks>
-		<TargetFrameworks>$(TargetFrameworks);net8.0-maccatalyst</TargetFrameworks>
-		<IosSimulatorBuild Condition="'$(Configuration)' == 'Debug'">False</IosSimulatorBuild>
+    <PropertyGroup>
+        <TargetFrameworks>$(TargetFrameworks);net8.0-ios</TargetFrameworks>
+        <TargetFrameworks>$(TargetFrameworks);net8.0-android</TargetFrameworks>
+        <TargetFrameworks>$(TargetFrameworks);net8.0-maccatalyst</TargetFrameworks>
+        <IosSimulatorBuild Condition="'$(Configuration)' == 'Debug'">False</IosSimulatorBuild>
 
-		<MauiVersion>8.0.20</MauiVersion>
-		<OutputType>Exe</OutputType>
-		<RootNamespace>Thingy52</RootNamespace>
-		<SingleProject>true</SingleProject>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<UseMaui>true</UseMaui>
+        <MauiVersion>8.0.20</MauiVersion>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>Thingy52</RootNamespace>
+        <SingleProject>true</SingleProject>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UseMaui>true</UseMaui>
 
-		<ApplicationTitle>Thingy52</ApplicationTitle>
-		<ApplicationId>de.hshl.isd.thingy</ApplicationId>
-		<ApplicationIdGuid>33A5A641-E103-4988-94BF-949355F88A6A</ApplicationIdGuid>
+        <ApplicationTitle>Thingy52</ApplicationTitle>
+        <ApplicationId>de.hshl.isd.thingy</ApplicationId>
+        <ApplicationIdGuid>33A5A641-E103-4988-94BF-949355F88A6A</ApplicationIdGuid>
 
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
-		
-		<ShinyVersion>3.3.3</ShinyVersion>
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
 
-		<!--slower build, faster runtime in DEBUG-->
-		<!-- <_MauiForceXamlCForDebug Condition="'$(Configuration)' == 'Debug'">true</_MauiForceXamlCForDebug> -->
-	</PropertyGroup>
+        <ShinyVersion>3.3.3</ShinyVersion>
 
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-		<DefineConstants>$(DefineConstants);PLATFORM</DefineConstants>
-		<SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
-		<TargetPlatformVersion>34</TargetPlatformVersion>
-		<!--
-		<EmbedAssembliesIntoApk Condition="'$(Configuration)' == 'Debug'">true</EmbedAssembliesIntoApk>
-		<AndroidPackageFormats Condition="'$(Configuration)' == 'Release'">aab</AndroidPackageFormats>
-		<AndroidLinkTool>r8</AndroidLinkTool>
-		<AndroidLinkTool>proguard</AndroidLinkTool>
-		-->
+        <!--slower build, faster runtime in DEBUG-->
+        <!-- <_MauiForceXamlCForDebug Condition="'$(Configuration)' == 'Debug'">true</_MauiForceXamlCForDebug> -->
     </PropertyGroup>
 
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
-		<SupportedOSPlatformVersion>14.2</SupportedOSPlatformVersion>
-		<DefineConstants>$(DefineConstants);APPLE;PLATFORM</DefineConstants>	
-	</PropertyGroup>
-	
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
-		<RuntimeIdentifier Condition="'$(IosSimulator)' != 'true'">ios-arm64</RuntimeIdentifier>	
-	</PropertyGroup>
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <DefineConstants>$(DefineConstants);PLATFORM</DefineConstants>
+        <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
+        <TargetPlatformVersion>34</TargetPlatformVersion>
+        <!--
+        <EmbedAssembliesIntoApk Condition="'$(Configuration)' == 'Debug'">true</EmbedAssembliesIntoApk>
+        <AndroidPackageFormats Condition="'$(Configuration)' == 'Release'">aab</AndroidPackageFormats>
+        <AndroidLinkTool>r8</AndroidLinkTool>
+        <AndroidLinkTool>proguard</AndroidLinkTool>
+        -->
+    </PropertyGroup>
 
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' AND '$(IosSimulatorBuild)' == 'true'">
-		<RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier>
-		<EnableCodeSigning>true</EnableCodeSigning>
-		<CodesignRequireProvisioningProfile>true</CodesignRequireProvisioningProfile>
-		<DisableCodesignVerification>true</DisableCodesignVerification>	
-	</PropertyGroup>
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+        <SupportedOSPlatformVersion>14.2</SupportedOSPlatformVersion>
+        <DefineConstants>$(DefineConstants);APPLE;PLATFORM</DefineConstants>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
-		<SupportedOSPlatformVersion>14.0</SupportedOSPlatformVersion>
-		<DefineConstants>$(DefineConstants);APPLE;PLATFORM</DefineConstants>
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+        <RuntimeIdentifier Condition="'$(IosSimulator)' != 'true'">ios-arm64</RuntimeIdentifier>
+    </PropertyGroup>
 
-		<UseHardenedRuntime Condition="'$(Configuration)' == 'Release'">true</UseHardenedRuntime>
-		<RuntimeIdentifiers Condition="'$(Configuration)' == 'Debug'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
-	</PropertyGroup>
-	
-	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
-		<BundleResource Include="Platforms\iOS\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
-	</ItemGroup>
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' AND '$(IosSimulatorBuild)' == 'true'">
+        <RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier>
+        <EnableCodeSigning>true</EnableCodeSigning>
+        <CodesignRequireProvisioningProfile>true</CodesignRequireProvisioningProfile>
+        <DisableCodesignVerification>true</DisableCodesignVerification>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+        <SupportedOSPlatformVersion>14.0</SupportedOSPlatformVersion>
+        <DefineConstants>$(DefineConstants);APPLE;PLATFORM</DefineConstants>
 
-		<MauiImage Include="Resources\Images\*" />
-		<MauiFont Include="Resources\Fonts\*" />
-		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-	</ItemGroup>
+        <UseHardenedRuntime Condition="'$(Configuration)' == 'Release'">true</UseHardenedRuntime>
+        <RuntimeIdentifiers Condition="'$(Configuration)' == 'Debug'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" Condition="'$(Configuration)' == 'Debug'" />
-		<PackageReference Include="Shiny.Framework" Version="4.1.0" />
-		<PackageReference Include="Shiny.BluetoothLE" version="3.3.3" />
-	</ItemGroup>
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+        <BundleResource Include="Platforms\iOS\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy"/>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <MauiXaml Update="Tabs\Environment\EnvironmentPage.xaml">
-	    <SubType>Designer</SubType>
-	  </MauiXaml>
-	  <MauiXaml Update="Pages\ConnectionPage.xaml">
-	    <SubType>Designer</SubType>
-	  </MauiXaml>
-	</ItemGroup>
+    <ItemGroup>
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4"/>
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128"/>
 
-	<ItemGroup>
-	  <Compile Update="Tabs\Environment\EnvironmentPage.xaml.cs">
-	    <DependentUpon>EnvironmentPage.xaml</DependentUpon>
-	    <SubType>Code</SubType>
-	  </Compile>
-	  <Compile Update="Pages\ConnectionPage.xaml.cs">
-	    <DependentUpon>ConnectionPage.xaml</DependentUpon>
-	    <SubType>Code</SubType>
-	  </Compile>
-	</ItemGroup>
+        <MauiImage Include="Resources\Images\*"/>
+        <MauiFont Include="Resources\Fonts\*"/>
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" Condition="'$(Configuration)' == 'Debug'"/>
+        <PackageReference Include="Shiny.Framework" Version="4.1.0"/>
+        <PackageReference Include="Shiny.BluetoothLE" version="3.3.3"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <MauiXaml Update="Tabs\Environment\EnvironmentPage.xaml">
+            <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="Pages\ConnectionPage.xaml">
+            <SubType>Designer</SubType>
+        </MauiXaml>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Tabs\Environment\EnvironmentPage.xaml.cs">
+            <DependentUpon>EnvironmentPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\ConnectionPage.xaml.cs">
+            <DependentUpon>ConnectionPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Thingy52">
+            <HintPath>bin\Debug\net8.0-maccatalyst\Thingy52.app\Contents\MonoBundle\.xamarin\maccatalyst-arm64\Thingy52.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 
 </Project>

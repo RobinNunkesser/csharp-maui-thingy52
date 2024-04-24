@@ -17,27 +17,49 @@ public class ThingyService : IThingyService
         }
     }
 
-    public async Task<byte> BatteryService()
+    public async Task<byte> ReadBatteryLevel()
+    {
+        await ConnectIfNotConnected();
+
+        var characteristics =
+            await Thingy!.GetCharacteristics(ThingyUUIDs.BatteryService);
+
+        foreach (var characteristic in characteristics)
+        {
+            if (!characteristic.Uuid.Equals(ThingyUUIDs
+                    .BatteryLevelCharacteristic) ||
+                !characteristic.CanRead()) continue;
+            var result =
+                await Thingy!.ReadCharacteristicAsync(characteristic);
+            if (result.Data == null) continue;
+            Debug.WriteLine($"Battery level read as {result.Data[0]}");
+            return result.Data[0];
+        }
+
+        return byte.MaxValue;
+    }
+
+    public async Task GetTemperatureNotifications(
+        Action<BleCharacteristicResult> TemperatureUpdate)
+    {
+        await ConnectIfNotConnected();
+
+        var characteristics =
+            await Thingy!.GetCharacteristics(ThingyUUIDs.WeatherStationService);
+        foreach (var characteristic in characteristics)
+        {
+            if (!characteristic.Uuid.Equals(ThingyUUIDs
+                    .TemperatureCharacteristic) ||
+                !characteristic.CanNotify()) continue;
+            Thingy!.NotifyCharacteristic(characteristic)
+                .Subscribe(TemperatureUpdate);
+        }
+    }
+
+    private async Task ConnectIfNotConnected()
     {
         if (Thingy == null)
             throw new InvalidOperationException("No thingy connected");
         if (!Thingy.IsConnected()) await Thingy.ConnectAsync();
-
-        var characteristics =
-            await Thingy.GetCharacteristics(ThingyUUIDs.BatteryUuid);
-
-        foreach (var characteristic in characteristics)
-            if (characteristic.CanRead())
-            {
-                var result =
-                    await Thingy!.ReadCharacteristicAsync(characteristic);
-                if (result.Data != null)
-                {
-                    Debug.WriteLine($"Battery level read as {result.Data[0]}");
-                    return result.Data[0];
-                }
-            }
-
-        return byte.MaxValue;
     }
 }

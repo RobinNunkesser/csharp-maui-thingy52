@@ -5,6 +5,9 @@
              xmlns:local="clr-namespace:Thingy52"
              x:DataType="local:EnvironmentViewModel"
              x:Class="Thingy52.EnvironmentPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{Binding BatteryLevel}" />
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -15,8 +18,8 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Text="Battery Level" />
-            <Label Grid.Row="0" Grid.Column="1" Text="{Binding BatteryLevel}" />
+            <Label Grid.Row="0" Grid.Column="0" Text="Temperature" />
+            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Temperature}" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

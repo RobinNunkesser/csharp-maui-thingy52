@@ -6,5 +6,8 @@ public interface IThingyService
 {
     IPeripheral? Thingy { get; set; }
 
-    Task<byte> BatteryService();
+    Task<byte> ReadBatteryLevel();
+
+    Task GetTemperatureNotifications(
+        Action<BleCharacteristicResult> TemperatureUpdate);
 }

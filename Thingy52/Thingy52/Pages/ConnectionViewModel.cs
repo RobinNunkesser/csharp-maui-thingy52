@@ -45,8 +45,6 @@ public class ConnectionViewModel
                     StopScan();
                     _thingyService.Thingy = result.Peripheral;
 
-                    var battery = await _thingyService.BatteryService();
-
                     MainThread.BeginInvokeOnMainThread(NavigateToEnvironment);
                     continue;
 
@@ -59,10 +57,9 @@ public class ConnectionViewModel
             }
 
             _scanSub = _bleManager
-                .Scan(new ScanConfig(ThingyUUIDs.ThingyConfigurationUuid))
+                .Scan(new ScanConfig(ThingyUUIDs.ThingyConfigurationService))
                 .Buffer(TimeSpan.FromSeconds(1))
                 .Where(x => x?.Any() ?? false)
-                //.ObserveOn(DefaultScheduler.Instance)
                 .Subscribe(OnNextScanResults,
                     ex => Debug.WriteLine((string?)ex.ToString())
                 );
