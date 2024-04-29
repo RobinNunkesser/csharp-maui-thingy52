@@ -7,7 +7,6 @@ namespace Thingy52;
 
 public class EnvironmentViewModel : INotifyPropertyChanged
 {
-    private readonly IBleManager _bleManager;
     private readonly IThingyService _thingyService;
 
     private string _batteryLevel = "?";
@@ -15,10 +14,8 @@ public class EnvironmentViewModel : INotifyPropertyChanged
     private byte _temperature;
 
 
-    public EnvironmentViewModel(IBleManager bleManager,
-        IThingyService thingyService)
+    public EnvironmentViewModel(IThingyService thingyService)
     {
-        _bleManager = bleManager;
         _thingyService = thingyService;
         _thingyService.ContinueWith(QueryCharacteristics);
     }
