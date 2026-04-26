@@ -4,6 +4,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Thingy52.SoundPage">
     <ContentPage.Content>
+     <VerticalStackLayout Padding="20"
+                 Spacing="14">
+         <Label Text="Sound"
+             FontSize="24"
+             FontAttributes="Bold" />
 
+         <Label Text="Direkter Einstieg in den Sound-Service (Speaker/Microphone Characteristics)."
+             FontSize="13"
+             TextColor="Gray" />
+
+         <Button Text="Sound-Service oeffnen"
+              Clicked="OpenSoundServiceClicked" />
+     </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>

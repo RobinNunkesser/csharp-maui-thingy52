@@ -6,4 +6,10 @@ public partial class MotionPage : ContentPage
     {
         InitializeComponent();
     }
+
+    private async void OpenMotionServiceClicked(object sender, EventArgs e)
+    {
+        var uuid = Uri.EscapeDataString(ThingyServiceCatalog.MotionServiceUuid);
+        await Shell.Current.GoToAsync($"BleCharacteristicsPage?serviceUuid={uuid}");
+    }
 }

@@ -21,6 +21,14 @@
                    FontSize="12"
                    TextColor="Gray" />
 
+            <Label Text="{Binding LastEvent, StringFormat='Letztes Event: {0}'}"
+                   FontSize="12"
+                   TextColor="Gray" />
+
+            <Label Text="{Binding LastValueTime, StringFormat='Zeit: {0}'}"
+                   FontSize="12"
+                   TextColor="Gray" />
+
             <ActivityIndicator IsRunning="{Binding IsLoading}"
                                IsVisible="{Binding IsLoading}"
                                HeightRequest="24"
@@ -40,10 +48,25 @@
                         Command="{Binding ReadCommand}"
                         IsVisible="{Binding CharInfo.CanRead, FallbackValue=False}" />
 
+                            <Button Text="Schreiben"
+                                          Command="{Binding WriteCommand}"
+                                          IsVisible="{Binding CharInfo.CanWrite, FallbackValue=False}" />
+
                 <Button Text="{Binding SubscribeButtonText}"
                         Command="{Binding ToggleNotifyCommand}"
                         IsVisible="{Binding CharInfo.CanNotify, FallbackValue=False}" />
             </HorizontalStackLayout>
+
+                     <Entry Text="{Binding WriteValue}"
+                               Placeholder="Hex (z.B. 0A FF) oder UTF-8"
+                               IsVisible="{Binding CharInfo.CanWrite, FallbackValue=False}" />
+
+                     <HorizontalStackLayout Spacing="8"
+                                                           IsVisible="{Binding CharInfo.CanWrite, FallbackValue=False}">
+                            <Label Text="UTF-8 schreiben"
+                                      VerticalTextAlignment="Center" />
+                            <Switch IsToggled="{Binding WriteAsUtf8}" />
+                     </HorizontalStackLayout>
 
         </VerticalStackLayout>
     </ContentPage.Content>

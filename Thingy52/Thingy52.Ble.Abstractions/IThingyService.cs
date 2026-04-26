@@ -30,5 +30,7 @@ public interface IThingyService
 
     Task<byte[]?> ReadCharacteristic(string serviceUuid, string characteristicUuid);
 
+    Task<bool> WriteCharacteristic(string serviceUuid, string characteristicUuid, byte[] data);
+
     Task<IDisposable?> SubscribeCharacteristic(string serviceUuid, string characteristicUuid, Action<byte[]> onData);
 }

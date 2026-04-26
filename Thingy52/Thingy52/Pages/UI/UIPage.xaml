@@ -4,6 +4,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Thingy52.UIPage">
     <ContentPage.Content>
+     <VerticalStackLayout Padding="20"
+                 Spacing="14">
+         <Label Text="UI"
+             FontSize="24"
+             FontAttributes="Bold" />
 
+         <Label Text="Direkter Einstieg in den Thingy UI-Service (z.B. LED/Button Characteristics)."
+             FontSize="13"
+             TextColor="Gray" />
+
+         <Button Text="UI-Service oeffnen"
+              Clicked="OpenUiServiceClicked" />
+     </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>

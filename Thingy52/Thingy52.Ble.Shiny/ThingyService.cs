@@ -243,6 +243,24 @@ public class ThingyService : IThingyService
         return result.Data;
     }
 
+    public async Task<bool> WriteCharacteristic(string serviceUuid, string characteristicUuid, byte[] data)
+    {
+        if (_thingy is null || data.Length == 0)
+            return false;
+
+        await ConnectIfNotConnected();
+
+        var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
+        var characteristic = characteristics.FirstOrDefault(c =>
+            string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
+
+        if (characteristic is null || !characteristic.CanWrite())
+            return false;
+
+        await _thingy.WriteCharacteristic(characteristic, data);
+        return true;
+    }
+
     public async Task<IDisposable?> SubscribeCharacteristic(string serviceUuid, string characteristicUuid, Action<byte[]> onData)
     {
         if (_thingy is null)

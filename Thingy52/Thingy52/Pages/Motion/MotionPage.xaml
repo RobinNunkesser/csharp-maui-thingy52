@@ -4,6 +4,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Thingy52.MotionPage">
     <ContentPage.Content>
+     <VerticalStackLayout Padding="20"
+                 Spacing="14">
+         <Label Text="Motion"
+             FontSize="24"
+             FontAttributes="Bold" />
 
+         <Label Text="Direkter Einstieg in den Motion-Service (Accelerometer/Gyro/Orientation Characteristics)."
+             FontSize="13"
+             TextColor="Gray" />
+
+         <Button Text="Motion-Service oeffnen"
+              Clicked="OpenMotionServiceClicked" />
+     </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>
