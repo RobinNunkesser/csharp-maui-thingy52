@@ -2,6 +2,9 @@ using Shiny;
 using Shiny.BluetoothLE;
 using System.Reactive.Linq;
 using Thingy52.Ble.Abstractions;
+using AbsBleServiceInfo = Thingy52.Ble.Abstractions.BleServiceInfo;
+using AbsBleCharacteristicInfo = Thingy52.Ble.Abstractions.BleCharacteristicInfo;
+using AbsBleCharacteristicProperties = Thingy52.Ble.Abstractions.BleCharacteristicProperties;
 
 namespace Thingy52.Ble.Shiny;
 
@@ -191,6 +194,75 @@ public class ThingyService : IThingyService
         }
 
         return data[0];
+    }
+
+    public async Task<IReadOnlyList<AbsBleServiceInfo>> GetServices()
+    {
+        if (_thingy is null)
+            return [];
+
+        await ConnectIfNotConnected();
+
+        var services = await _thingy.GetServices().FirstAsync();
+        return services.Select(s => new AbsBleServiceInfo(s.Uuid)).ToList();
+    }
+
+    public async Task<IReadOnlyList<AbsBleCharacteristicInfo>> GetCharacteristics(string serviceUuid)
+    {
+        if (_thingy is null)
+            return [];
+
+        await ConnectIfNotConnected();
+
+        var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
+        return characteristics.Select(c =>
+        {
+            var props = AbsBleCharacteristicProperties.None;
+            if (c.CanRead()) props |= AbsBleCharacteristicProperties.Read;
+            if (c.CanWrite()) props |= AbsBleCharacteristicProperties.Write;
+            if (c.CanNotify()) props |= AbsBleCharacteristicProperties.Notify;
+            return new AbsBleCharacteristicInfo(serviceUuid, c.Uuid, props);
+        }).ToList();
+    }
+
+    public async Task<byte[]?> ReadCharacteristic(string serviceUuid, string characteristicUuid)
+    {
+        if (_thingy is null)
+            return null;
+
+        await ConnectIfNotConnected();
+
+        var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
+        var characteristic = characteristics.FirstOrDefault(c =>
+            string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
+
+        if (characteristic is null || !characteristic.CanRead())
+            return null;
+
+        var result = await _thingy.ReadCharacteristicAsync(characteristic);
+        return result.Data;
+    }
+
+    public async Task<IDisposable?> SubscribeCharacteristic(string serviceUuid, string characteristicUuid, Action<byte[]> onData)
+    {
+        if (_thingy is null)
+            return null;
+
+        await ConnectIfNotConnected();
+
+        var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
+        var characteristic = characteristics.FirstOrDefault(c =>
+            string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
+
+        if (characteristic is null || !characteristic.CanNotify())
+            return null;
+
+        return _thingy.NotifyCharacteristic(characteristic)
+            .Subscribe(result =>
+            {
+                if (result.Data is not null)
+                    onData(result.Data);
+            });
     }
 
     private async Task ConnectIfNotConnected()

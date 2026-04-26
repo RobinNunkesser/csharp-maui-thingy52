@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Thingy52"
+             xmlns:ble="clr-namespace:Thingy52.Ble.Abstractions;assembly=Thingy52.Ble.Abstractions"
+             x:DataType="local:BleServicesViewModel"
+             x:Class="Thingy52.BleServicesPage"
+             Title="BLE Services">
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="20" Spacing="12">
+
+            <Label Text="BLE Services"
+                   FontSize="24"
+                   FontAttributes="Bold" />
+
+            <Label Text="{Binding StatusText}"
+                   FontSize="13"
+                   TextColor="Gray" />
+
+            <Button Text="Aktualisieren"
+                    Command="{Binding RefreshCommand}" />
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               IsVisible="{Binding IsLoading}"
+                               HeightRequest="24"
+                               WidthRequest="24" />
+
+            <CollectionView ItemsSource="{Binding Services}"
+                            VerticalOptions="FillAndExpand">
+                <CollectionView.EmptyView>
+                    <Label Text="Keine Services verfuegbar."
+                           HorizontalTextAlignment="Center"
+                           TextColor="Gray" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="ble:BleServiceInfo">
+                        <Grid Padding="10,8"
+                              RowDefinitions="Auto">
+                            <Label Text="{Binding ServiceUuid}"
+                                   FontSize="13">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:BleServicesViewModel}}, Path=SelectServiceCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Thingy52"
+             x:DataType="local:BleCharacteristicDetailViewModel"
+             x:Class="Thingy52.BleCharacteristicDetailPage"
+             Title="Characteristic">
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="20" Spacing="12">
+
+            <Label Text="Characteristic"
+                   FontSize="24"
+                   FontAttributes="Bold" />
+
+            <Label Text="{Binding CharInfo.CharacteristicUuid, FallbackValue='-'}"
+                   FontSize="13"
+                   TextColor="Gray" />
+
+            <Label Text="{Binding CharInfo.PropertiesText, FallbackValue=''}"
+                   FontSize="12"
+                   TextColor="Gray" />
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               IsVisible="{Binding IsLoading}"
+                               HeightRequest="24"
+                               WidthRequest="24" />
+
+            <Label Text="Wert:"
+                   FontAttributes="Bold"
+                   FontSize="14" />
+
+            <Label Text="{Binding ValueText}"
+                   FontSize="13"
+                   FontFamily="Courier"
+                   TextColor="DarkBlue" />
+
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Lesen"
+                        Command="{Binding ReadCommand}"
+                        IsVisible="{Binding CharInfo.CanRead, FallbackValue=False}" />
+
+                <Button Text="{Binding SubscribeButtonText}"
+                        Command="{Binding ToggleNotifyCommand}"
+                        IsVisible="{Binding CharInfo.CanNotify, FallbackValue=False}" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>

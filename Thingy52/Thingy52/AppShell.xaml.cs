@@ -24,5 +24,7 @@ public partial class AppShell : Shell
     private static void InitializeRouting()
     {
         Routing.RegisterRoute("ConnectionPage", typeof(ConnectionPage));
+        Routing.RegisterRoute("BleCharacteristicsPage", typeof(BleCharacteristicsPage));
+        Routing.RegisterRoute("BleCharacteristicDetailPage", typeof(BleCharacteristicDetailPage));
     }
 }

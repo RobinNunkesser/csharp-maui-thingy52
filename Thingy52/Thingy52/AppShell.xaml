@@ -54,4 +54,14 @@
         </Tab>
     </FlyoutItem>
 
+    <FlyoutItem Title="BLE Browser"
+                Icon="shiny.png">
+        <Tab>
+            <ShellContent
+                Title="BLE Browser"
+                ContentTemplate="{DataTemplate local:BleServicesPage}"
+                Route="BleServicesPage" />
+        </Tab>
+    </FlyoutItem>
+
 </Shell>

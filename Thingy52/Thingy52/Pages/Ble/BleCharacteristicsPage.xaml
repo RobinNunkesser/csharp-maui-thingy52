@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Thingy52"
+             xmlns:ble="clr-namespace:Thingy52.Ble.Abstractions;assembly=Thingy52.Ble.Abstractions"
+             x:DataType="local:BleCharacteristicsViewModel"
+             x:Class="Thingy52.BleCharacteristicsPage"
+             Title="Characteristics">
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="20" Spacing="12">
+
+            <Label Text="Characteristics"
+                   FontSize="24"
+                   FontAttributes="Bold" />
+
+            <Label Text="{Binding StatusText}"
+                   FontSize="13"
+                   TextColor="Gray" />
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               IsVisible="{Binding IsLoading}"
+                               HeightRequest="24"
+                               WidthRequest="24" />
+
+            <CollectionView ItemsSource="{Binding Characteristics}"
+                            VerticalOptions="FillAndExpand">
+                <CollectionView.EmptyView>
+                    <Label Text="Keine Characteristics verfuegbar."
+                           HorizontalTextAlignment="Center"
+                           TextColor="Gray" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="ble:BleCharacteristicInfo">
+                        <Grid Padding="10,8"
+                              ColumnDefinitions="*,Auto"
+                              RowDefinitions="Auto,Auto">
+                            <Label Grid.Row="0" Grid.Column="0"
+                                   Text="{Binding CharacteristicUuid}"
+                                   FontSize="13"
+                                   FontAttributes="Bold">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:BleCharacteristicsViewModel}}, Path=SelectCharacteristicCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Grid.Row="1" Grid.Column="0"
+                                   Text="{Binding PropertiesText}"
+                                   FontSize="11"
+                                   TextColor="Gray" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>
