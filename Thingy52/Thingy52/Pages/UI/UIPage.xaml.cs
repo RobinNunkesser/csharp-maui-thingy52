@@ -2,10 +2,20 @@ namespace Thingy52;
 
 public partial class UIPage : ContentPage
 {
-    public UIPage()
+    private readonly UIViewModel _vm;
+
+    public UIPage(UIViewModel vm)
     {
         InitializeComponent();
+        _vm = vm;
+        BindingContext = vm;
     }
+
+    private async void WriteLedClicked(object sender, EventArgs e)
+        => await _vm.WriteLedAsync();
+
+    private async void ToggleButtonClicked(object sender, EventArgs e)
+        => await _vm.ToggleButtonSubscribeAsync();
 
     private async void OpenUiServiceClicked(object sender, EventArgs e)
     {
@@ -13,20 +23,9 @@ public partial class UIPage : ContentPage
         await Shell.Current.GoToAsync($"BleCharacteristicsPage?serviceUuid={uuid}");
     }
 
-    private async void OpenUiLedPresetClicked(object sender, EventArgs e)
+    protected override void OnDisappearing()
     {
-        var service = Uri.EscapeDataString(ThingyServiceCatalog.UiServiceUuid);
-        var characteristic = Uri.EscapeDataString(ThingyServiceCatalog.UiLedCharacteristicUuid);
-        var writeValue = Uri.EscapeDataString("01 01 00");
-        await Shell.Current.GoToAsync(
-            $"BleCharacteristicDetailPage?serviceUuid={service}&characteristicUuid={characteristic}&writeValue={writeValue}&writeAsUtf8=false");
-    }
-
-    private async void OpenUiButtonNotifyClicked(object sender, EventArgs e)
-    {
-        var service = Uri.EscapeDataString(ThingyServiceCatalog.UiServiceUuid);
-        var characteristic = Uri.EscapeDataString(ThingyServiceCatalog.UiButtonCharacteristicUuid);
-        await Shell.Current.GoToAsync(
-            $"BleCharacteristicDetailPage?serviceUuid={service}&characteristicUuid={characteristic}&autoSubscribe=true");
+        base.OnDisappearing();
+        _vm.Dispose();
     }
 }

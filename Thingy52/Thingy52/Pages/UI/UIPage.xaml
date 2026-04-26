@@ -2,30 +2,141 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Thingy52.UIPage">
+             x:Class="Thingy52.UIPage"
+             Title="User Interface">
     <ContentPage.Content>
-        <VerticalStackLayout Padding="20" Spacing="14">
-            <Label Text="UI"
-                   FontSize="24"
-                   FontAttributes="Bold" />
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="14">
 
-            <Label Text="Schnellaktionen fuer LED und Button, plus kompletter Service-Browser."
-                   FontSize="13"
-                   TextColor="Gray" />
+                <!-- ── Titel ─────────────────────────────── -->
+                <Label Text="User Interface"
+                       FontSize="24"
+                       FontAttributes="Bold" />
 
-            <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Button Text="LED Gruen (Preset laden)"
-                            Clicked="OpenUiLedPresetClicked" />
-                    <Button Text="Button Notify starten"
-                            Clicked="OpenUiButtonNotifyClicked" />
-                    <Button Text="Alle UI-Characteristics"
-                            Clicked="OpenUiServiceClicked" />
-                </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
+                <!-- ── Status ────────────────────────────── -->
+                <Label Text="{Binding Status}"
+                       FontSize="13"
+                       TextColor="Gray" />
+
+                <!-- ══ LED-Steuerung ════════════════════════ -->
+                <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="14">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+
+                        <Label Text="LED-Modus"
+                               FontSize="15"
+                               FontAttributes="Bold" />
+
+                        <!-- Mode Picker -->
+                        <Picker x:Name="ModePicker"
+                                SelectedIndex="{Binding SelectedMode}"
+                                Title="LED-Modus">
+                            <Picker.Items>
+                                <x:String>Aus</x:String>
+                                <x:String>Konstant (RGB)</x:String>
+                                <x:String>Atmen (Preset)</x:String>
+                                <x:String>Einmalig (Preset)</x:String>
+                            </Picker.Items>
+                        </Picker>
+
+                        <!-- Constant Mode: RGB sliders -->
+                        <VerticalStackLayout Spacing="8"
+                                             IsVisible="{Binding IsConstantMode}">
+                            <Grid ColumnDefinitions="60,*,40" RowSpacing="6">
+                                <!-- R -->
+                                <Label Grid.Column="0" Text="Rot" VerticalOptions="Center"/>
+                                <Slider Grid.Column="1" Minimum="0" Maximum="255"
+                                        Value="{Binding Red}"
+                                        ThumbColor="Red" MinimumTrackColor="Red"/>
+                                <Label Grid.Column="2" Text="{Binding Red, StringFormat='{0:0}'}"
+                                       VerticalOptions="Center"/>
+                                <!-- G -->
+                                <Label Grid.Column="0" Grid.Row="1" Text="Grün" VerticalOptions="Center"/>
+                                <Slider Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="255"
+                                        Value="{Binding Green}"
+                                        ThumbColor="Green" MinimumTrackColor="Green"/>
+                                <Label Grid.Column="2" Grid.Row="1" Text="{Binding Green, StringFormat='{0:0}'}"
+                                       VerticalOptions="Center"/>
+                                <!-- B -->
+                                <Label Grid.Column="0" Grid.Row="2" Text="Blau" VerticalOptions="Center"/>
+                                <Slider Grid.Column="1" Grid.Row="2" Minimum="0" Maximum="255"
+                                        Value="{Binding Blue}"
+                                        ThumbColor="Blue" MinimumTrackColor="Blue"/>
+                                <Label Grid.Column="2" Grid.Row="2" Text="{Binding Blue, StringFormat='{0:0}'}"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                            <!-- Farbvorschau -->
+                            <BoxView HeightRequest="32" CornerRadius="8"
+                                     Color="{Binding ConstantPreviewColor}"
+                                     Margin="0,4,0,0"/>
+                        </VerticalStackLayout>
+
+                        <!-- Breathe / OneShot: Preset + Intensity -->
+                        <VerticalStackLayout Spacing="8"
+                                             IsVisible="{Binding IsBreatheOrOneShotMode}">
+                            <Label Text="Preset-Farbe" FontSize="13" TextColor="Gray"/>
+                            <Picker SelectedIndex="{Binding SelectedPreset}">
+                                <Picker.Items>
+                                    <x:String>Rot</x:String>
+                                    <x:String>Grün</x:String>
+                                    <x:String>Gelb</x:String>
+                                    <x:String>Blau</x:String>
+                                    <x:String>Lila</x:String>
+                                    <x:String>Cyan</x:String>
+                                    <x:String>Weiß</x:String>
+                                </Picker.Items>
+                            </Picker>
+                            <Grid ColumnDefinitions="*,50" ColumnSpacing="8">
+                                <Slider Grid.Column="0"
+                                        Minimum="1" Maximum="100"
+                                        Value="{Binding Intensity}"/>
+                                <Label Grid.Column="1"
+                                       Text="{Binding IntensityText}"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                            <Label Text="Intensität" FontSize="11" TextColor="Gray"/>
+                        </VerticalStackLayout>
+
+                        <!-- Breathe only: Delay -->
+                        <VerticalStackLayout Spacing="4"
+                                             IsVisible="{Binding IsBreatheMode}">
+                            <Label Text="Verzögerung (ms, 50–10000)" FontSize="13" TextColor="Gray"/>
+                            <Entry Text="{Binding BreatheDelayText}"
+                                   Keyboard="Numeric"
+                                   Placeholder="3500"/>
+                        </VerticalStackLayout>
+
+                        <Button Text="LED setzen"
+                                Clicked="WriteLedClicked"
+                                BackgroundColor="#0071C5"
+                                TextColor="White"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ══ Button-State ═════════════════════════ -->
+                <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="14">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Button"
+                               FontSize="15"
+                               FontAttributes="Bold"/>
+                        <Label Text="{Binding ButtonState}"
+                               FontSize="28"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               TextColor="#0071C5"/>
+                        <Button Text="{Binding SubscribeButtonText}"
+                                Clicked="ToggleButtonClicked"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ══ BLE Browser ══════════════════════════ -->
+                <Button Text="Alle UI-Characteristics"
+                        Clicked="OpenUiServiceClicked"
+                        BackgroundColor="#F2F2F7"
+                        TextColor="#333333"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

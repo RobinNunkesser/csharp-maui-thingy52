@@ -2,10 +2,23 @@ namespace Thingy52;
 
 public partial class MotionPage : ContentPage
 {
-    public MotionPage()
+    private readonly MotionViewModel _vm;
+
+    public MotionPage(MotionViewModel vm)
     {
         InitializeComponent();
+        _vm = vm;
+        BindingContext = vm;
     }
+
+    private async void ToggleTapClicked(object sender, EventArgs e)
+        => await _vm.ToggleTapAsync();
+
+    private async void ToggleQuaternionClicked(object sender, EventArgs e)
+        => await _vm.ToggleQuaternionAsync();
+
+    private async void ToggleOrientationClicked(object sender, EventArgs e)
+        => await _vm.ToggleOrientationAsync();
 
     private async void OpenMotionServiceClicked(object sender, EventArgs e)
     {
@@ -13,19 +26,9 @@ public partial class MotionPage : ContentPage
         await Shell.Current.GoToAsync($"BleCharacteristicsPage?serviceUuid={uuid}");
     }
 
-    private async void OpenMotionTapNotifyClicked(object sender, EventArgs e)
+    protected override void OnDisappearing()
     {
-        var service = Uri.EscapeDataString(ThingyServiceCatalog.MotionServiceUuid);
-        var characteristic = Uri.EscapeDataString(ThingyServiceCatalog.MotionTapCharacteristicUuid);
-        await Shell.Current.GoToAsync(
-            $"BleCharacteristicDetailPage?serviceUuid={service}&characteristicUuid={characteristic}&autoSubscribe=true");
-    }
-
-    private async void OpenMotionQuaternionNotifyClicked(object sender, EventArgs e)
-    {
-        var service = Uri.EscapeDataString(ThingyServiceCatalog.MotionServiceUuid);
-        var characteristic = Uri.EscapeDataString(ThingyServiceCatalog.MotionQuaternionCharacteristicUuid);
-        await Shell.Current.GoToAsync(
-            $"BleCharacteristicDetailPage?serviceUuid={service}&characteristicUuid={characteristic}&autoSubscribe=true");
+        base.OnDisappearing();
+        _vm.Dispose();
     }
 }

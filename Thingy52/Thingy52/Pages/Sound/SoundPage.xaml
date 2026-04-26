@@ -2,28 +2,93 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Thingy52.SoundPage">
+             x:Class="Thingy52.SoundPage"
+             Title="Sound">
     <ContentPage.Content>
-        <VerticalStackLayout Padding="20" Spacing="14">
-            <Label Text="Sound"
-                   FontSize="24"
-                   FontAttributes="Bold" />
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="14">
 
-            <Label Text="Preset fuer Speaker-Daten plus kompletter Service-Browser."
-                   FontSize="13"
-                   TextColor="Gray" />
+                <Label Text="Sound"
+                       FontSize="24"
+                       FontAttributes="Bold" />
 
-            <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Button Text="Speaker Preset (Hex) laden"
-                            Clicked="OpenSoundPresetClicked" />
-                    <Button Text="Alle Sound-Characteristics"
-                            Clicked="OpenSoundServiceClicked" />
-                </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
+                <Label Text="{Binding Status}"
+                       FontSize="13"
+                       TextColor="Gray" />
+
+                <!-- ══ Modus-Auswahl ═════════════════════════ -->
+                <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="14">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Speaker-Modus" FontSize="15" FontAttributes="Bold"/>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Grid.Column="0"
+                                    Text="Soundeffekt"
+                                    Clicked="SetEffectModeClicked"
+                                    BackgroundColor="#0071C5" TextColor="White"/>
+                            <Button Grid.Column="1"
+                                    Text="Ton (Frequenz)"
+                                    Clicked="SetToneModeClicked"
+                                    BackgroundColor="#5AC8FA" TextColor="White"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ══ Soundeffekte ══════════════════════════ -->
+                <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="14">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Soundeffekte" FontSize="15" FontAttributes="Bold"/>
+                        <Label Text="Modus zuerst auf 'Soundeffekt' setzen." FontSize="11" TextColor="Gray"/>
+                        <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
+                            <Button Text="Punkt sammeln"  Margin="2" CommandParameter="0" Clicked="PlayEffectClicked"/>
+                            <Button Text="Punkt 2"        Margin="2" CommandParameter="1" Clicked="PlayEffectClicked"/>
+                            <Button Text="Explosion"      Margin="2" CommandParameter="2" Clicked="PlayEffectClicked"/>
+                            <Button Text="Explosion 2"    Margin="2" CommandParameter="3" Clicked="PlayEffectClicked"/>
+                            <Button Text="Treffer"        Margin="2" CommandParameter="4" Clicked="PlayEffectClicked"/>
+                            <Button Text="Pickup"         Margin="2" CommandParameter="5" Clicked="PlayEffectClicked"/>
+                            <Button Text="Pickup 2"       Margin="2" CommandParameter="6" Clicked="PlayEffectClicked"/>
+                            <Button Text="Schießen"       Margin="2" CommandParameter="7" Clicked="PlayEffectClicked"/>
+                            <Button Text="Schießen 2"     Margin="2" CommandParameter="8" Clicked="PlayEffectClicked"/>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ══ Ton ══════════════════════════════════ -->
+                <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="14">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Ton" FontSize="15" FontAttributes="Bold"/>
+                        <Label Text="Modus zuerst auf 'Ton' setzen." FontSize="11" TextColor="Gray"/>
+                        <Grid ColumnDefinitions="80,*,60" RowSpacing="6">
+                            <Label Grid.Column="0" Text="Frequenz" VerticalOptions="Center"/>
+                            <Slider Grid.Column="1" Minimum="100" Maximum="20000"
+                                    Value="{Binding ToneFrequency}"/>
+                            <Label Grid.Column="2" Text="{Binding ToneFrequencyText}" VerticalOptions="Center"/>
+
+                            <Label Grid.Column="0" Grid.Row="1" Text="Dauer" VerticalOptions="Center"/>
+                            <Slider Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="5000"
+                                    Value="{Binding ToneDuration}"/>
+                            <Label Grid.Column="2" Grid.Row="1" Text="{Binding ToneDurationText}" VerticalOptions="Center"/>
+
+                            <Label Grid.Column="0" Grid.Row="2" Text="Lautstärke" VerticalOptions="Center"/>
+                            <Slider Grid.Column="1" Grid.Row="2" Minimum="0" Maximum="100"
+                                    Value="{Binding ToneVolume}"/>
+                            <Label Grid.Column="2" Grid.Row="2" Text="{Binding ToneVolumeText}" VerticalOptions="Center"/>
+                        </Grid>
+                        <Button Text="Ton spielen"
+                                Clicked="PlayToneClicked"
+                                BackgroundColor="#0071C5" TextColor="White"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ══ BLE Browser ══════════════════════════ -->
+                <Button Text="Alle Sound-Characteristics"
+                        Clicked="OpenSoundServiceClicked"
+                        BackgroundColor="#F2F2F7"
+                        TextColor="#333333"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

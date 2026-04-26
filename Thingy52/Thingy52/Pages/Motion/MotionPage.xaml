@@ -2,30 +2,97 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Thingy52.MotionPage">
+             x:Class="Thingy52.MotionPage"
+             Title="Motion">
     <ContentPage.Content>
-        <VerticalStackLayout Padding="20" Spacing="14">
-            <Label Text="Motion"
-                   FontSize="24"
-                   FontAttributes="Bold" />
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="14">
 
-            <Label Text="Schneller Zugriff auf typische Motion-Streams und den vollen Browser."
-                   FontSize="13"
-                   TextColor="Gray" />
+                <Label Text="Motion"
+                       FontSize="24"
+                       FontAttributes="Bold" />
 
-            <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Button Text="Tap Notify starten"
-                            Clicked="OpenMotionTapNotifyClicked" />
-                    <Button Text="Quaternion Notify starten"
-                            Clicked="OpenMotionQuaternionNotifyClicked" />
-                    <Button Text="Alle Motion-Characteristics"
-                            Clicked="OpenMotionServiceClicked" />
-                </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
+                <Label Text="{Binding Status}"
+                       FontSize="13"
+                       TextColor="Gray" />
+
+                <!-- ══ Tap ═══════════════════════════════════ -->
+                <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="14">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Tap" FontSize="15" FontAttributes="Bold"/>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="Richtung" FontSize="11" TextColor="Gray"/>
+                                <Label Text="{Binding TapDirection}"
+                                       FontSize="20" FontAttributes="Bold"
+                                       TextColor="#0071C5"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Anzahl" FontSize="11" TextColor="Gray"/>
+                                <Label Text="{Binding TapCount}"
+                                       FontSize="20" FontAttributes="Bold"
+                                       TextColor="#0071C5"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                        <Button Text="{Binding TapButtonText}"
+                                Clicked="ToggleTapClicked"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ══ Quaternion ════════════════════════════ -->
+                <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="14">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Quaternion (W / X / Y / Z)" FontSize="15" FontAttributes="Bold"/>
+                        <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="W" FontSize="11" TextColor="Gray" HorizontalOptions="Center"/>
+                                <Label Text="{Binding QW}" FontSize="16" FontAttributes="Bold"
+                                       HorizontalOptions="Center" TextColor="#0071C5"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="X" FontSize="11" TextColor="Gray" HorizontalOptions="Center"/>
+                                <Label Text="{Binding QX}" FontSize="16" FontAttributes="Bold"
+                                       HorizontalOptions="Center" TextColor="#0071C5"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2">
+                                <Label Text="Y" FontSize="11" TextColor="Gray" HorizontalOptions="Center"/>
+                                <Label Text="{Binding QY}" FontSize="16" FontAttributes="Bold"
+                                       HorizontalOptions="Center" TextColor="#0071C5"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="3">
+                                <Label Text="Z" FontSize="11" TextColor="Gray" HorizontalOptions="Center"/>
+                                <Label Text="{Binding QZ}" FontSize="16" FontAttributes="Bold"
+                                       HorizontalOptions="Center" TextColor="#0071C5"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                        <Button Text="{Binding QuaternionButtonText}"
+                                Clicked="ToggleQuaternionClicked"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ══ Orientation ═══════════════════════════ -->
+                <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="14">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Orientierung" FontSize="15" FontAttributes="Bold"/>
+                        <Label Text="{Binding Orientation}"
+                               FontSize="24" FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               TextColor="#0071C5"/>
+                        <Button Text="{Binding OrientationButtonText}"
+                                Clicked="ToggleOrientationClicked"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ══ BLE Browser ══════════════════════════ -->
+                <Button Text="Alle Motion-Characteristics"
+                        Clicked="OpenMotionServiceClicked"
+                        BackgroundColor="#F2F2F7"
+                        TextColor="#333333"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

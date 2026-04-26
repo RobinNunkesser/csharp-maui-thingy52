@@ -38,6 +38,12 @@ public static class MauiProgram
         builder.Services.AddTransient<BleCharacteristicsViewModel>();
         builder.Services.AddTransient<BleCharacteristicDetailPage>();
         builder.Services.AddTransient<BleCharacteristicDetailViewModel>();
+        builder.Services.AddTransient<UIPage>();
+        builder.Services.AddTransient<UIViewModel>();
+        builder.Services.AddTransient<MotionPage>();
+        builder.Services.AddTransient<MotionViewModel>();
+        builder.Services.AddTransient<SoundPage>();
+        builder.Services.AddTransient<SoundViewModel>();
         return builder;
     }
 }
