@@ -6,6 +6,10 @@ namespace Thingy52;
 
 public class SoundViewModel : INotifyPropertyChanged
 {
+    private const byte SpeakerModeTone = 0x01;
+    private const byte SpeakerModeEffect = 0x03;
+    private const byte MicrophoneModeAdpcm = 0x01;
+
     // Sound effect names mapped to 0-based index (per iOS library ThingySoundEffect)
     public static readonly (string Name, byte Index)[] SoundEffects =
     [
@@ -67,22 +71,26 @@ public class SoundViewModel : INotifyPropertyChanged
     {
         if (!_thingyService.HasConnectedThingy) { Status = "Nicht verbunden."; return; }
 
-        // Config: [speakerMode, microphoneMode=1(adpcm)]
-        var data = new byte[] { mode, 0x01 };
-        var ok = await _thingyService.WriteCharacteristic(
-            ThingyServiceCatalog.SoundServiceUuid,
-            ThingyServiceCatalog.SoundConfigCharacteristicUuid,
-            data);
+        var ok = await EnsureSpeakerModeAsync(mode, forceWrite: true);
+        if (!ok)
+        {
+            Status = "Speaker-Modus konnte nicht gesetzt werden.";
+            return;
+        }
 
-        Status = ok
-            ? mode == 3 ? "Modus: Soundeffekt" : "Modus: Ton"
-            : "Fehler beim Schreiben.";
+        Status = mode == SpeakerModeEffect ? "Modus: Soundeffekt" : "Modus: Ton";
     }
 
     /// <summary>Spielt einen vordefinierten Sound-Effekt (mode=3).</summary>
     public async Task PlaySoundEffectAsync(byte effectIndex)
     {
         if (!_thingyService.HasConnectedThingy) { Status = "Nicht verbunden."; return; }
+
+        if (!await EnsureSpeakerModeAsync(SpeakerModeEffect))
+        {
+            Status = "Soundeffekt-Modus konnte nicht gesetzt werden.";
+            return;
+        }
 
         var ok = await _thingyService.WriteCharacteristic(
             ThingyServiceCatalog.SoundServiceUuid,
@@ -98,6 +106,12 @@ public class SoundViewModel : INotifyPropertyChanged
     public async Task PlayToneAsync()
     {
         if (!_thingyService.HasConnectedThingy) { Status = "Nicht verbunden."; return; }
+
+        if (!await EnsureSpeakerModeAsync(SpeakerModeTone))
+        {
+            Status = "Ton-Modus konnte nicht gesetzt werden.";
+            return;
+        }
 
         var freq     = (ushort)Math.Clamp(_toneFrequency, 100, 20000);
         var duration = (ushort)Math.Clamp(_toneDuration,  0, 10000);
@@ -118,6 +132,36 @@ public class SoundViewModel : INotifyPropertyChanged
         Status = ok
             ? $"Ton: {freq} Hz, {duration} ms, {vol}%"
             : "Fehler beim Schreiben.";
+    }
+
+    private async Task<bool> EnsureSpeakerModeAsync(byte desiredMode, bool forceWrite = false)
+    {
+        if (!_thingyService.HasConnectedThingy)
+            return false;
+
+        if (!forceWrite)
+        {
+            var currentConfig = await _thingyService.ReadCharacteristic(
+                ThingyServiceCatalog.SoundServiceUuid,
+                ThingyServiceCatalog.SoundConfigCharacteristicUuid);
+
+            if (currentConfig is { Length: >= 1 } && currentConfig[0] == desiredMode)
+                return true;
+        }
+
+        // Config payload: [speakerMode, microphoneMode]
+        var configPayload = new byte[] { desiredMode, MicrophoneModeAdpcm };
+        var writeOk = await _thingyService.WriteCharacteristic(
+            ThingyServiceCatalog.SoundServiceUuid,
+            ThingyServiceCatalog.SoundConfigCharacteristicUuid,
+            configPayload);
+
+        if (!writeOk)
+            return false;
+
+        // Give firmware a tiny moment before the next speaker write.
+        await Task.Delay(120);
+        return true;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -254,11 +254,18 @@ public class ThingyService : IThingyService
         var characteristic = characteristics.FirstOrDefault(c =>
             string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
 
-        if (characteristic is null || !characteristic.CanWrite())
+        if (characteristic is null)
             return false;
 
-        await _thingy.WriteCharacteristic(characteristic, data);
-        return true;
+        try
+        {
+            await _thingy.WriteCharacteristic(characteristic, data);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public async Task<IDisposable?> SubscribeCharacteristic(string serviceUuid, string characteristicUuid, Action<byte[]> onData)
