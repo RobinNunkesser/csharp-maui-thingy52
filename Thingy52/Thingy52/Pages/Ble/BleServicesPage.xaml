@@ -36,17 +36,30 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="ble:BleServiceInfo">
-                        <Grid Padding="10,8"
-                              RowDefinitions="Auto">
-                            <Label Text="{Binding ServiceUuid}"
-                                   FontSize="13">
-                                <Label.GestureRecognizers>
+                        <Border Margin="0,4"
+                                Stroke="#E1E1E1"
+                                StrokeThickness="1"
+                                Padding="12,10">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                       Text="{Binding ServiceUuid}"
+                                       FontSize="13"
+                                       VerticalTextAlignment="Center" />
+                                <Label Grid.Column="1"
+                                       Text=">"
+                                       FontSize="16"
+                                       TextColor="#9A9A9A"
+                                       VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
                                     <TapGestureRecognizer
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type local:BleServicesViewModel}}, Path=SelectServiceCommand}"
                                         CommandParameter="{Binding .}" />
-                                </Label.GestureRecognizers>
-                            </Label>
-                        </Grid>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

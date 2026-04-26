@@ -18,6 +18,11 @@ public class BleCharacteristicDetailViewModel : INotifyPropertyChanged
     private string _lastValueTime = "-";
     private string _writeValue = string.Empty;
     private bool _writeAsUtf8;
+    private string _asciiValue = "-";
+    private string _utf8Value = "-";
+    private string _uint16Value = "-";
+    private string _floatValue = "-";
+    private bool _autoSubscribeRequested;
     private bool _isLoading;
     private bool _isSubscribed;
     private IDisposable? _subscription;
@@ -102,17 +107,60 @@ public class BleCharacteristicDetailViewModel : INotifyPropertyChanged
         set => SetField(ref _writeAsUtf8, value);
     }
 
+    public string AsciiValue
+    {
+        get => _asciiValue;
+        set => SetField(ref _asciiValue, value);
+    }
+
+    public string Utf8Value
+    {
+        get => _utf8Value;
+        set => SetField(ref _utf8Value, value);
+    }
+
+    public string UInt16Value
+    {
+        get => _uint16Value;
+        set => SetField(ref _uint16Value, value);
+    }
+
+    public string FloatValue
+    {
+        get => _floatValue;
+        set => SetField(ref _floatValue, value);
+    }
+
     public ICommand ReadCommand { get; }
 
     public ICommand WriteCommand { get; }
 
     public ICommand ToggleNotifyCommand { get; }
 
-    public void SetParameters(string serviceUuid, string characteristicUuid)
+    public void SetParameters(
+        string serviceUuid,
+        string characteristicUuid,
+        string? presetWriteValue = null,
+        bool writeAsUtf8 = false,
+        bool autoSubscribe = false)
     {
         _serviceUuid = serviceUuid;
         _characteristicUuid = characteristicUuid;
+        if (!string.IsNullOrWhiteSpace(presetWriteValue))
+            WriteValue = presetWriteValue;
+
+        WriteAsUtf8 = writeAsUtf8;
+        _autoSubscribeRequested = autoSubscribe;
         _ = LoadCharacteristicInfo(serviceUuid, characteristicUuid);
+    }
+
+    public async Task TryAutoSubscribe()
+    {
+        if (_autoSubscribeRequested)
+        {
+            _autoSubscribeRequested = false;
+            await ToggleNotify();
+        }
     }
 
     public void Dispose()
@@ -150,9 +198,7 @@ public class BleCharacteristicDetailViewModel : INotifyPropertyChanged
         try
         {
             var data = await _thingyService.ReadCharacteristic(_serviceUuid, _characteristicUuid);
-            ValueText = data is { Length: > 0 }
-                ? BitConverter.ToString(data).Replace("-", " ")
-                : "(leer)";
+            UpdateDisplayValues(data);
             LastEvent = "Read";
             LastValueTime = DateTime.Now.ToString("T");
         }
@@ -202,7 +248,7 @@ public class BleCharacteristicDetailViewModel : INotifyPropertyChanged
 
             LastEvent = "Write";
             LastValueTime = DateTime.Now.ToString("T");
-            ValueText = BitConverter.ToString(payload).Replace("-", " ");
+            UpdateDisplayValues(payload);
         }
         catch (Exception ex)
         {
@@ -237,7 +283,7 @@ public class BleCharacteristicDetailViewModel : INotifyPropertyChanged
                 {
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        ValueText = BitConverter.ToString(data).Replace("-", " ");
+                        UpdateDisplayValues(data);
                         LastEvent = "Notify";
                         LastValueTime = DateTime.Now.ToString("T");
                     });
@@ -255,6 +301,25 @@ public class BleCharacteristicDetailViewModel : INotifyPropertyChanged
         {
             IsLoading = false;
         }
+    }
+
+    private void UpdateDisplayValues(byte[]? data)
+    {
+        if (data is null || data.Length == 0)
+        {
+            ValueText = "(leer)";
+            AsciiValue = "-";
+            Utf8Value = "-";
+            UInt16Value = "-";
+            FloatValue = "-";
+            return;
+        }
+
+        ValueText = BitConverter.ToString(data).Replace("-", " ");
+        AsciiValue = Encoding.ASCII.GetString(data);
+        Utf8Value = Encoding.UTF8.GetString(data);
+        UInt16Value = data.Length >= 2 ? BitConverter.ToUInt16(data, 0).ToString() : "n/a";
+        FloatValue = data.Length >= 4 ? BitConverter.ToSingle(data, 0).ToString("0.###") : "n/a";
     }
 
     private static byte[] ParseHex(string input)

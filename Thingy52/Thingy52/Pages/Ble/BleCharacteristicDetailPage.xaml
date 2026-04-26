@@ -7,7 +7,8 @@
              x:Class="Thingy52.BleCharacteristicDetailPage"
              Title="Characteristic">
     <ContentPage.Content>
-        <VerticalStackLayout Padding="20" Spacing="12">
+              <ScrollView>
+                     <VerticalStackLayout Padding="20" Spacing="12">
 
             <Label Text="Characteristic"
                    FontSize="24"
@@ -43,6 +44,27 @@
                    FontFamily="Courier"
                    TextColor="DarkBlue" />
 
+            <Border StrokeThickness="1"
+                    Stroke="#D9D9D9"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Decoder"
+                           FontAttributes="Bold"
+                           FontSize="14" />
+                    <Label Text="{Binding AsciiValue, StringFormat='ASCII: {0}'}"
+                           FontSize="12" />
+                    <Label Text="{Binding Utf8Value, StringFormat='UTF-8: {0}'}"
+                           FontSize="12" />
+                    <Label Text="{Binding UInt16Value, StringFormat='UInt16 LE: {0}'}"
+                           FontSize="12" />
+                    <Label Text="{Binding FloatValue, StringFormat='Float32 LE: {0}'}"
+                           FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
             <HorizontalStackLayout Spacing="10">
                 <Button Text="Lesen"
                         Command="{Binding ReadCommand}"
@@ -57,17 +79,18 @@
                         IsVisible="{Binding CharInfo.CanNotify, FallbackValue=False}" />
             </HorizontalStackLayout>
 
-                     <Entry Text="{Binding WriteValue}"
-                               Placeholder="Hex (z.B. 0A FF) oder UTF-8"
-                               IsVisible="{Binding CharInfo.CanWrite, FallbackValue=False}" />
+            <Entry Text="{Binding WriteValue}"
+                   Placeholder="Hex (z.B. 0A FF) oder UTF-8"
+                   IsVisible="{Binding CharInfo.CanWrite, FallbackValue=False}" />
 
-                     <HorizontalStackLayout Spacing="8"
-                                                           IsVisible="{Binding CharInfo.CanWrite, FallbackValue=False}">
-                            <Label Text="UTF-8 schreiben"
-                                      VerticalTextAlignment="Center" />
-                            <Switch IsToggled="{Binding WriteAsUtf8}" />
-                     </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="8"
+                                   IsVisible="{Binding CharInfo.CanWrite, FallbackValue=False}">
+                <Label Text="UTF-8 schreiben"
+                       VerticalTextAlignment="Center" />
+                <Switch IsToggled="{Binding WriteAsUtf8}" />
+            </HorizontalStackLayout>
 
-        </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

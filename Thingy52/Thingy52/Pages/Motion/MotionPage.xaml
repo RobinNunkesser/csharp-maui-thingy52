@@ -4,18 +4,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Thingy52.MotionPage">
     <ContentPage.Content>
-     <VerticalStackLayout Padding="20"
-                 Spacing="14">
-         <Label Text="Motion"
-             FontSize="24"
-             FontAttributes="Bold" />
+        <VerticalStackLayout Padding="20" Spacing="14">
+            <Label Text="Motion"
+                   FontSize="24"
+                   FontAttributes="Bold" />
 
-         <Label Text="Direkter Einstieg in den Motion-Service (Accelerometer/Gyro/Orientation Characteristics)."
-             FontSize="13"
-             TextColor="Gray" />
+            <Label Text="Schneller Zugriff auf typische Motion-Streams und den vollen Browser."
+                   FontSize="13"
+                   TextColor="Gray" />
 
-         <Button Text="Motion-Service oeffnen"
-              Clicked="OpenMotionServiceClicked" />
-     </VerticalStackLayout>
+            <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Button Text="Tap Notify starten"
+                            Clicked="OpenMotionTapNotifyClicked" />
+                    <Button Text="Quaternion Notify starten"
+                            Clicked="OpenMotionQuaternionNotifyClicked" />
+                    <Button Text="Alle Motion-Characteristics"
+                            Clicked="OpenMotionServiceClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>

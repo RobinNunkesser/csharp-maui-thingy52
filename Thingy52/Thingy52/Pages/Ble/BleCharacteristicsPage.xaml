@@ -33,24 +33,36 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="ble:BleCharacteristicInfo">
-                        <Grid Padding="10,8"
-                              ColumnDefinitions="*,Auto"
-                              RowDefinitions="Auto,Auto">
-                            <Label Grid.Row="0" Grid.Column="0"
-                                   Text="{Binding CharacteristicUuid}"
-                                   FontSize="13"
-                                   FontAttributes="Bold">
-                                <Label.GestureRecognizers>
+                        <Border Margin="0,4"
+                                Stroke="#E1E1E1"
+                                StrokeThickness="1"
+                                Padding="12,10">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <Grid ColumnDefinitions="*,Auto"
+                                  RowDefinitions="Auto,Auto">
+                                <Label Grid.Row="0" Grid.Column="0"
+                                       Text="{Binding CharacteristicUuid}"
+                                       FontSize="13"
+                                       FontAttributes="Bold" />
+                                <Label Grid.Row="1" Grid.Column="0"
+                                       Text="{Binding PropertiesText}"
+                                       FontSize="11"
+                                       TextColor="Gray" />
+                                <Label Grid.Row="0" Grid.Column="1"
+                                       Grid.RowSpan="2"
+                                       Text=">"
+                                       FontSize="16"
+                                       TextColor="#9A9A9A"
+                                       VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
                                     <TapGestureRecognizer
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type local:BleCharacteristicsViewModel}}, Path=SelectCharacteristicCommand}"
                                         CommandParameter="{Binding .}" />
-                                </Label.GestureRecognizers>
-                            </Label>
-                            <Label Grid.Row="1" Grid.Column="0"
-                                   Text="{Binding PropertiesText}"
-                                   FontSize="11"
-                                   TextColor="Gray" />
-                        </Grid>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

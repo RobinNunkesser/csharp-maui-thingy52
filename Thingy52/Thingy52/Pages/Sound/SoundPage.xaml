@@ -4,18 +4,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Thingy52.SoundPage">
     <ContentPage.Content>
-     <VerticalStackLayout Padding="20"
-                 Spacing="14">
-         <Label Text="Sound"
-             FontSize="24"
-             FontAttributes="Bold" />
+        <VerticalStackLayout Padding="20" Spacing="14">
+            <Label Text="Sound"
+                   FontSize="24"
+                   FontAttributes="Bold" />
 
-         <Label Text="Direkter Einstieg in den Sound-Service (Speaker/Microphone Characteristics)."
-             FontSize="13"
-             TextColor="Gray" />
+            <Label Text="Preset fuer Speaker-Daten plus kompletter Service-Browser."
+                   FontSize="13"
+                   TextColor="Gray" />
 
-         <Button Text="Sound-Service oeffnen"
-              Clicked="OpenSoundServiceClicked" />
-     </VerticalStackLayout>
+            <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Button Text="Speaker Preset (Hex) laden"
+                            Clicked="OpenSoundPresetClicked" />
+                    <Button Text="Alle Sound-Characteristics"
+                            Clicked="OpenSoundServiceClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>
