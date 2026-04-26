@@ -4,11 +4,11 @@ public class MauiNavigationService : INavigationService
 {
     public Task InitializeAsync()
     {
-        return NavigateToAsync("ConnectionPage");
+        return NavigateToAsync("//ConnectionPage");
     }
 
     public Task NavigateToAsync(string route,
-        IDictionary<string, object> routeParameters = null)
+        IDictionary<string, object>? routeParameters = null)
     {
         var shellNavigation = new ShellNavigationState(route);
 

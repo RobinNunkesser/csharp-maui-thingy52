@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thingy52", "Thingy52\Thingy52.csproj", "{AEA162A7-417A-49B5-9D6B-8B7349423B01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thingy52.Ble.Abstractions", "Thingy52.Ble.Abstractions\Thingy52.Ble.Abstractions.csproj", "{0F21FA59-B2EA-4332-90FC-E049D5576BDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thingy52.Ble.Shiny", "Thingy52.Ble.Shiny\Thingy52.Ble.Shiny.csproj", "{AF8A4BE4-B1B5-4A24-B41A-9C6D7A58CB09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{AEA162A7-417A-49B5-9D6B-8B7349423B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEA162A7-417A-49B5-9D6B-8B7349423B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEA162A7-417A-49B5-9D6B-8B7349423B01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F21FA59-B2EA-4332-90FC-E049D5576BDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F21FA59-B2EA-4332-90FC-E049D5576BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F21FA59-B2EA-4332-90FC-E049D5576BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F21FA59-B2EA-4332-90FC-E049D5576BDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF8A4BE4-B1B5-4A24-B41A-9C6D7A58CB09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF8A4BE4-B1B5-4A24-B41A-9C6D7A58CB09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF8A4BE4-B1B5-4A24-B41A-9C6D7A58CB09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF8A4BE4-B1B5-4A24-B41A-9C6D7A58CB09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

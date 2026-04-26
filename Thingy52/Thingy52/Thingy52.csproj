@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>$(TargetFrameworks);net8.0-ios</TargetFrameworks>
-        <TargetFrameworks>$(TargetFrameworks);net8.0-android</TargetFrameworks>
-        <TargetFrameworks>$(TargetFrameworks);net8.0-maccatalyst</TargetFrameworks>
+        <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
         <IosSimulatorBuild Condition="'$(Configuration)' == 'Debug'">False</IosSimulatorBuild>
 
-        <MauiVersion>8.0.20</MauiVersion>
+        <MauiVersion>10.0.20</MauiVersion>
         <OutputType>Exe</OutputType>
         <RootNamespace>Thingy52</RootNamespace>
         <SingleProject>true</SingleProject>
@@ -29,7 +27,7 @@
     <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <DefineConstants>$(DefineConstants);PLATFORM</DefineConstants>
         <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
-        <TargetPlatformVersion>34</TargetPlatformVersion>
+        <TargetPlatformVersion>36.0</TargetPlatformVersion>
         <!--
         <EmbedAssembliesIntoApk Condition="'$(Configuration)' == 'Debug'">true</EmbedAssembliesIntoApk>
         <AndroidPackageFormats Condition="'$(Configuration)' == 'Release'">aab</AndroidPackageFormats>
@@ -55,11 +53,14 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
-        <SupportedOSPlatformVersion>14.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
         <DefineConstants>$(DefineConstants);APPLE;PLATFORM</DefineConstants>
+        <ValidateXcodeVersion>false</ValidateXcodeVersion>
 
         <UseHardenedRuntime Condition="'$(Configuration)' == 'Release'">true</UseHardenedRuntime>
         <RuntimeIdentifiers Condition="'$(Configuration)' == 'Debug'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+        <!-- MacCatalyst workaround: statischer Registrar verhindert Laufzeitfehler mit Shiny/BLE -->
+        <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
     </PropertyGroup>
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
@@ -77,9 +78,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" Condition="'$(Configuration)' == 'Debug'"/>
-        <PackageReference Include="Shiny.BluetoothLE" version="3.3.3"/>
-        <PackageReference Include="Shiny.Hosting.Maui" Version="3.3.3"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1" Condition="'$(Configuration)' == 'Debug'"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -124,9 +123,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="Thingy52">
-            <HintPath>bin\Debug\net8.0-maccatalyst\Thingy52.app\Contents\MonoBundle\.xamarin\maccatalyst-arm64\Thingy52.dll</HintPath>
-        </Reference>
+        <ProjectReference Include="..\Thingy52.Ble.Abstractions\Thingy52.Ble.Abstractions.csproj"/>
+        <ProjectReference Include="..\Thingy52.Ble.Shiny\Thingy52.Ble.Shiny.csproj"/>
     </ItemGroup>
 
 </Project>

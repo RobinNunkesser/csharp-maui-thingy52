@@ -1,22 +1,22 @@
 ﻿using System.Diagnostics;
-using Shiny.BluetoothLE;
+using Thingy52.Ble.Abstractions;
 
 namespace Thingy52;
 
 public partial class App : Application
 {
-	private IBleManager bleManager;
-	public App(IBleManager bleManager, Services.INavigationService navigationService)
+	private readonly IThingyService _thingyService;
+	public App(IThingyService thingyService, Services.INavigationService navigationService)
 	{
 		InitializeComponent();
-		this.bleManager = bleManager;
+		_thingyService = thingyService;
 		MainPage = new AppShell(navigationService);
 	}
     
 	protected override async void OnStart()
 	{
-		var access = await bleManager.RequestAccess();
-		if (access != AccessState.Available)
+		var accessGranted = await _thingyService.EnsureAccess();
+		if (!accessGranted)
 		{
 			Debug.WriteLine(
 				"BLE Access not available, please check your permissions and try again.");

@@ -9,17 +9,50 @@
         <ToolbarItem Text="{Binding BatteryLevel}" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <Label Text="Environment"
+                   FontSize="24"
+                   FontAttributes="Bold" />
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Text="Temperature" />
-            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Temperature}" />
-        </Grid>
+            <Grid ColumnDefinitions="*,Auto"
+                  Padding="12"
+                  BackgroundColor="{AppThemeBinding Light=#F4F5F7, Dark=#1E1E1E}">
+                <Label Grid.Column="0"
+                       Text="Battery Level"
+                       FontAttributes="Bold" />
+                <Label Grid.Column="1"
+                       Text="{Binding BatteryLevel}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto"
+                  Padding="12"
+                  BackgroundColor="{AppThemeBinding Light=#F4F5F7, Dark=#1E1E1E}">
+                <Label Grid.Column="0"
+                       Text="Temperature"
+                       FontAttributes="Bold" />
+                <Label Grid.Column="1"
+                       Text="{Binding Temperature}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto"
+                  Padding="12"
+                  BackgroundColor="{AppThemeBinding Light=#F4F5F7, Dark=#1E1E1E}">
+                <Label Grid.Column="0"
+                       Text="Humidity"
+                       FontAttributes="Bold" />
+                <Label Grid.Column="1"
+                       Text="{Binding Humidity}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto"
+                  Padding="12"
+                  BackgroundColor="{AppThemeBinding Light=#F4F5F7, Dark=#1E1E1E}">
+                <Label Grid.Column="0"
+                       Text="Pressure"
+                       FontAttributes="Bold" />
+                <Label Grid.Column="1"
+                       Text="{Binding Pressure}" />
+            </Grid>
+        </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -7,6 +7,16 @@
     xmlns:local="clr-namespace:Thingy52"
     Shell.FlyoutBehavior="Flyout"
     Title="Thingy52">
+    <FlyoutItem Title="Connection"
+                Icon="home.png">
+        <Tab>
+            <ShellContent
+                Title="Connection"
+                ContentTemplate="{DataTemplate local:ConnectionPage}"
+                Route="ConnectionPage" />
+        </Tab>
+    </FlyoutItem>
+
     <FlyoutItem Title="Environment"
                 Icon="sunny.png">
         <Tab>

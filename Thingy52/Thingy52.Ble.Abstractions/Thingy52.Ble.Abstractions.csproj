@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>Thingy52.Ble.Abstractions</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Thingy52 Team</Authors>
+    <PackageTags>ble;maui;thingy52;abstractions</PackageTags>
+    <Description>BLE abstractions for Thingy52 and future BLE MAUI apps.</Description>
+  </PropertyGroup>
+</Project>

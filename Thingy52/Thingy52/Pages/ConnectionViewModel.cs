@@ -1,75 +1,104 @@
-using System.Diagnostics;
-using Shiny.BluetoothLE;
-using Thingy52.Services.Thingy;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using Thingy52.Ble.Abstractions;
 using INavigationService = Thingy52.Services.INavigationService;
 
 namespace Thingy52;
 
-public class ConnectionViewModel
+public class ConnectionViewModel : INotifyPropertyChanged
 {
-    private readonly IBleManager _bleManager;
     private readonly INavigationService _navigationService;
     private readonly IThingyService _thingyService;
-    private IDisposable? _scanSub;
+    private bool _isScanning;
+    private string _statusText = "Suche nach Thingy...";
+    private string _connectedDeviceText = "Kein Geraet verbunden";
+    private bool _hasConnectedThingy;
 
-    public ConnectionViewModel(IBleManager bleManager,
-        INavigationService navigationService, IThingyService thingyService)
+    public ConnectionViewModel(
+        INavigationService navigationService,
+        IThingyService thingyService)
     {
-        _bleManager = bleManager;
         _navigationService = navigationService;
         _thingyService = thingyService;
-        Scan();
+        RetryScanCommand = new Command(async () => await ScanAndNavigate(), () => !IsScanning);
+        _ = ScanAndNavigate();
     }
 
-    public bool IsScanning { get; set; }
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-    private async void Scan()
+    public bool IsScanning
     {
-        IsScanning = _bleManager?.IsScanning ?? false;
-
-        if (_bleManager == null)
-            // handle            
-            return;
-        if (IsScanning)
+        get => _isScanning;
+        set
         {
-            StopScan();
+            if (SetField(ref _isScanning, value))
+                ((Command)RetryScanCommand).ChangeCanExecute();
         }
-        else
+    }
+
+    public bool HasConnectedThingy
+    {
+        get => _hasConnectedThingy;
+        set => SetField(ref _hasConnectedThingy, value);
+    }
+
+    public string StatusText
+    {
+        get => _statusText;
+        set => SetField(ref _statusText, value);
+    }
+
+    public string ConnectedDeviceText
+    {
+        get => _connectedDeviceText;
+        set => SetField(ref _connectedDeviceText, value);
+    }
+
+    public ICommand RetryScanCommand { get; }
+
+    private async Task ScanAndNavigate()
+    {
+        if (IsScanning)
+            return;
+
+        IsScanning = true;
+        HasConnectedThingy = false;
+        StatusText = "Scanne nach Thingy...";
+        ConnectedDeviceText = "Kein Geraet verbunden";
+
+        try
         {
-            IsScanning = true;
-
-            async void OnNextScanResults(IList<ScanResult> results)
+            var found = await _thingyService.ScanAndConnectThingy(TimeSpan.FromSeconds(20));
+            if (!found)
             {
-                foreach (var result in results)
-                {
-                    StopScan();
-                    _thingyService.Thingy = result.Peripheral;
-
-                    MainThread.BeginInvokeOnMainThread(NavigateToEnvironment);
-                    continue;
-
-                    async void NavigateToEnvironment()
-                    {
-                        await _navigationService.NavigateToAsync(
-                            "//EnvironmentPage");
-                    }
-                }
+                StatusText = "Kein Thingy gefunden. Bitte erneut versuchen.";
+                return;
             }
 
-            _scanSub = _bleManager
-                .Scan(new ScanConfig(ThingyUUIDs.ThingyConfigurationService))
-                .Buffer(TimeSpan.FromSeconds(1))
-                .Where(x => x?.Any() ?? false)
-                .Subscribe(OnNextScanResults,
-                    ex => Debug.WriteLine((string?)ex.ToString())
-                );
+            HasConnectedThingy = true;
+            ConnectedDeviceText = $"Verbunden: {_thingyService.ConnectedThingyName ?? "Thingy"}";
+            StatusText = "Thingy verbunden. Wechsle zur Environment-Seite...";
+            await _navigationService.NavigateToAsync("//EnvironmentPage");
+        }
+        finally
+        {
+            IsScanning = false;
         }
     }
 
-    private void StopScan()
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        _scanSub?.Dispose();
-        _scanSub = null;
-        IsScanning = false;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value))
+            return false;
+
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
     }
 }

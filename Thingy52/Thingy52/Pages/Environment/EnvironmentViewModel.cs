@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Shiny.BluetoothLE;
-using Thingy52.Services.Thingy;
+using Thingy52.Ble.Abstractions;
 
 namespace Thingy52;
 
@@ -9,7 +8,9 @@ public class EnvironmentViewModel : INotifyPropertyChanged
 {
     private readonly IThingyService _thingyService;
 
-    private string _batteryLevel = "?";
+    private string _batteryLevel = "-";
+    private string _humidity = "-";
+    private string _pressure = "-";
 
     private byte _temperature;
 
@@ -17,7 +18,7 @@ public class EnvironmentViewModel : INotifyPropertyChanged
     public EnvironmentViewModel(IThingyService thingyService)
     {
         _thingyService = thingyService;
-        _thingyService.ContinueWith(QueryCharacteristics);
+        _ = QueryCharacteristics();
     }
 
     public byte Temperature
@@ -32,20 +33,47 @@ public class EnvironmentViewModel : INotifyPropertyChanged
         set => SetField(ref _batteryLevel, value);
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    private async void QueryCharacteristics()
+    public string Humidity
     {
-        var batteryLevel = await _thingyService.ReadBatteryLevel();
-        BatteryLevel = $"{batteryLevel} %";
-
-        await _thingyService.GetTemperatureNotifications(
-            TemperatureObserver);
+        get => _humidity;
+        set => SetField(ref _humidity, value);
     }
 
-    private void TemperatureObserver(BleCharacteristicResult result)
+    public string Pressure
     {
-        Temperature = result.Data[0];
+        get => _pressure;
+        set => SetField(ref _pressure, value);
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private async Task QueryCharacteristics()
+    {
+        if (!_thingyService.HasConnectedThingy)
+        {
+            BatteryLevel = "Nicht verbunden";
+            return;
+        }
+
+        var batteryLevel = await _thingyService.ReadBatteryLevel();
+        BatteryLevel = batteryLevel.HasValue
+            ? $"{batteryLevel.Value} %"
+            : "n/a";
+
+        await _thingyService.SubscribeTemperature(temperature =>
+        {
+            Temperature = temperature;
+        });
+
+        await _thingyService.SubscribeHumidity(humidity =>
+        {
+            Humidity = $"{humidity} %";
+        });
+
+        await _thingyService.SubscribePressure(pressure =>
+        {
+            Pressure = $"{pressure:F1} hPa";
+        });
     }
 
     protected virtual void OnPropertyChanged(
