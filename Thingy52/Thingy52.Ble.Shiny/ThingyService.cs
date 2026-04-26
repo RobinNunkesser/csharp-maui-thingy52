@@ -11,7 +11,6 @@ public class ThingyService : IThingyService
 
     private readonly IBleManager _bleManager;
     private IPeripheral? _thingy;
-    private IDisposable? _scanSubscription;
 
     public ThingyService(IBleManager bleManager)
     {
@@ -30,48 +29,72 @@ public class ThingyService : IThingyService
 
     public string? ConnectedThingyName => _thingy?.Name;
 
+    public async Task<IReadOnlyList<ThingyDeviceInfo>> ScanThingyDevices(TimeSpan scanWindow, CancellationToken cancellationToken = default)
+    {
+        var devices = new Dictionary<string, ThingyDeviceInfo>(StringComparer.OrdinalIgnoreCase);
+        using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutSource.CancelAfter(scanWindow);
+
+        using var scanSubscription = _bleManager
+            .Scan(new ScanConfig(ThingyUUIDs.ThingyConfigurationService))
+            .Subscribe(result =>
+            {
+                if (!IsThingyCandidate(result.Peripheral.Name))
+                    return;
+
+                var deviceId = result.Peripheral.Uuid;
+                var name = result.Peripheral.Name ?? "Thingy";
+                devices[deviceId] = new ThingyDeviceInfo(deviceId, name, result.Rssi);
+            });
+
+        try
+        {
+            await Task.Delay(scanWindow, timeoutSource.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // Scan cancellation is expected when timeout elapses.
+        }
+
+        return devices.Values
+            .OrderByDescending(x => x.Rssi ?? int.MinValue)
+            .ToList();
+    }
+
+    public async Task<bool> ConnectToDevice(string deviceId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(deviceId))
+            return false;
+
+        try
+        {
+            var scanResults = await _bleManager
+                .Scan(new ScanConfig(ThingyUUIDs.ThingyConfigurationService))
+                .Where(result => string.Equals(result.Peripheral.Uuid, deviceId, StringComparison.OrdinalIgnoreCase))
+                .Timeout(TimeSpan.FromSeconds(10))
+                .FirstAsync();
+
+            _thingy = scanResults.Peripheral;
+            await ConnectIfNotConnected();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<bool> ScanAndConnectThingy(TimeSpan scanWindow, CancellationToken cancellationToken = default)
     {
         if (_thingy is not null)
             return true;
 
-        var completionSource = new TaskCompletionSource<IPeripheral?>(TaskCreationOptions.RunContinuationsAsynchronously);
-        using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutSource.CancelAfter(scanWindow);
-
-        void CancelScan()
-        {
-            _scanSubscription?.Dispose();
-            _scanSubscription = null;
-        }
-
-        using var _ = timeoutSource.Token.Register(() => completionSource.TrySetResult(null));
-
-        _scanSubscription = _bleManager
-            .Scan(new ScanConfig(ThingyUUIDs.ThingyConfigurationService))
-            .Buffer(TimeSpan.FromMilliseconds(500))
-            .Where(results => results?.Any() ?? false)
-            .Subscribe(
-                results =>
-                {
-                    var thingyResult = results
-                        .FirstOrDefault(result => IsThingyCandidate(result.Peripheral.Name));
-                    if (thingyResult is null)
-                        return;
-
-                    completionSource.TrySetResult(thingyResult.Peripheral);
-                },
-                _ => completionSource.TrySetResult(null));
-
-        var foundThingy = await completionSource.Task;
-        CancelScan();
-
-        if (foundThingy is null)
+        var devices = await ScanThingyDevices(scanWindow, cancellationToken);
+        var first = devices.FirstOrDefault();
+        if (first is null)
             return false;
 
-        _thingy = foundThingy;
-        await ConnectIfNotConnected();
-        return true;
+        return await ConnectToDevice(first.DeviceId, cancellationToken);
     }
 
     public async Task<byte?> ReadBatteryLevel()

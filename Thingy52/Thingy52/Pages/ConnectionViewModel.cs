@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -11,9 +12,11 @@ public class ConnectionViewModel : INotifyPropertyChanged
     private readonly INavigationService _navigationService;
     private readonly IThingyService _thingyService;
     private bool _isScanning;
-    private string _statusText = "Suche nach Thingy...";
+    private bool _isConnecting;
+    private string _statusText = "Bereit zum Scan.";
     private string _connectedDeviceText = "Kein Geraet verbunden";
     private bool _hasConnectedThingy;
+    private ThingyDeviceInfo? _selectedDevice;
 
     public ConnectionViewModel(
         INavigationService navigationService,
@@ -21,8 +24,10 @@ public class ConnectionViewModel : INotifyPropertyChanged
     {
         _navigationService = navigationService;
         _thingyService = thingyService;
-        RetryScanCommand = new Command(async () => await ScanAndNavigate(), () => !IsScanning);
-        _ = ScanAndNavigate();
+        Devices = new ObservableCollection<ThingyDeviceInfo>();
+        ScanCommand = new Command(async () => await ScanDevices(), () => !IsScanning && !IsConnecting);
+        ConnectCommand = new Command(async () => await ConnectSelected(), () => !IsScanning && !IsConnecting && SelectedDevice is not null);
+        _ = ScanDevices();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -33,7 +38,23 @@ public class ConnectionViewModel : INotifyPropertyChanged
         set
         {
             if (SetField(ref _isScanning, value))
-                ((Command)RetryScanCommand).ChangeCanExecute();
+            {
+                ((Command)ScanCommand).ChangeCanExecute();
+                ((Command)ConnectCommand).ChangeCanExecute();
+            }
+        }
+    }
+
+    public bool IsConnecting
+    {
+        get => _isConnecting;
+        set
+        {
+            if (SetField(ref _isConnecting, value))
+            {
+                ((Command)ScanCommand).ChangeCanExecute();
+                ((Command)ConnectCommand).ChangeCanExecute();
+            }
         }
     }
 
@@ -55,35 +76,78 @@ public class ConnectionViewModel : INotifyPropertyChanged
         set => SetField(ref _connectedDeviceText, value);
     }
 
-    public ICommand RetryScanCommand { get; }
+    public ObservableCollection<ThingyDeviceInfo> Devices { get; }
 
-    private async Task ScanAndNavigate()
+    public ThingyDeviceInfo? SelectedDevice
     {
-        if (IsScanning)
+        get => _selectedDevice;
+        set
+        {
+            if (SetField(ref _selectedDevice, value))
+                ((Command)ConnectCommand).ChangeCanExecute();
+        }
+    }
+
+    public ICommand ScanCommand { get; }
+
+    public ICommand ConnectCommand { get; }
+
+    private async Task ScanDevices()
+    {
+        if (IsScanning || IsConnecting)
             return;
 
         IsScanning = true;
         HasConnectedThingy = false;
         StatusText = "Scanne nach Thingy...";
-        ConnectedDeviceText = "Kein Geraet verbunden";
+        Devices.Clear();
+        SelectedDevice = null;
 
         try
         {
-            var found = await _thingyService.ScanAndConnectThingy(TimeSpan.FromSeconds(20));
-            if (!found)
+            var devices = await _thingyService.ScanThingyDevices(TimeSpan.FromSeconds(8));
+            foreach (var device in devices)
+                Devices.Add(device);
+
+            if (Devices.Count == 0)
             {
                 StatusText = "Kein Thingy gefunden. Bitte erneut versuchen.";
                 return;
             }
 
-            HasConnectedThingy = true;
-            ConnectedDeviceText = $"Verbunden: {_thingyService.ConnectedThingyName ?? "Thingy"}";
-            StatusText = "Thingy verbunden. Wechsle zur Environment-Seite...";
-            await _navigationService.NavigateToAsync("//EnvironmentPage");
+            StatusText = $"{Devices.Count} Geraet(e) gefunden. Bitte auswaehlen und verbinden.";
         }
         finally
         {
             IsScanning = false;
+        }
+    }
+
+    private async Task ConnectSelected()
+    {
+        if (SelectedDevice is null || IsScanning || IsConnecting)
+            return;
+
+        IsConnecting = true;
+        StatusText = $"Verbinde mit {SelectedDevice.Name}...";
+
+        try
+        {
+            var connected = await _thingyService.ConnectToDevice(SelectedDevice.DeviceId);
+            if (!connected)
+            {
+                StatusText = "Verbindung fehlgeschlagen. Bitte erneut scannen oder anderes Geraet waehlen.";
+                return;
+            }
+
+            HasConnectedThingy = true;
+            ConnectedDeviceText = $"Verbunden: {_thingyService.ConnectedThingyName ?? SelectedDevice.Name}";
+            StatusText = "Verbunden. Wechsle zur Environment-Seite...";
+            await _navigationService.NavigateToAsync("//EnvironmentPage");
+        }
+        finally
+        {
+            IsConnecting = false;
         }
     }
 

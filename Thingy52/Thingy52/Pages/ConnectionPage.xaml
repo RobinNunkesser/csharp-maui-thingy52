@@ -2,29 +2,71 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-          xmlns:local="clr-namespace:Thingy52"
-          x:DataType="local:ConnectionViewModel"
+             xmlns:local="clr-namespace:Thingy52"
+             xmlns:ble="clr-namespace:Thingy52.Ble.Abstractions;assembly=Thingy52.Ble.Abstractions"
+             x:DataType="local:ConnectionViewModel"
              x:Class="Thingy52.ConnectionPage">
     <ContentPage.Content>
-     <VerticalStackLayout Padding="24" Spacing="16">
-         <Label Text="Thingy Verbindung"
-             FontSize="24"
-             FontAttributes="Bold" />
+        <VerticalStackLayout Padding="20" Spacing="12">
+            <Label Text="Thingy Verbindung"
+                   FontSize="24"
+                   FontAttributes="Bold" />
 
-         <Label Text="{Binding StatusText}"
-             FontSize="16" />
+            <Label Text="{Binding StatusText}"
+                   FontSize="14" />
 
-         <Label Text="{Binding ConnectedDeviceText}"
-             FontSize="14"
-             TextColor="Gray" />
+            <Label Text="{Binding ConnectedDeviceText}"
+                   FontSize="13"
+                   TextColor="Gray" />
 
-         <ActivityIndicator IsRunning="{Binding IsScanning}"
-                   IsVisible="{Binding IsScanning}"
-                   HeightRequest="32"
-                   WidthRequest="32" />
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Scan"
+                        Command="{Binding ScanCommand}" />
 
-         <Button Text="Erneut scannen"
-              Command="{Binding RetryScanCommand}" />
-     </VerticalStackLayout>
+                <Button Text="Verbinden"
+                        Command="{Binding ConnectCommand}" />
+            </HorizontalStackLayout>
+
+            <ActivityIndicator IsRunning="{Binding IsScanning}"
+                               IsVisible="{Binding IsScanning}"
+                               HeightRequest="24"
+                               WidthRequest="24" />
+
+            <CollectionView ItemsSource="{Binding Devices}"
+                            SelectedItem="{Binding SelectedDevice}"
+                            SelectionMode="Single"
+                            VerticalOptions="FillAndExpand">
+                <CollectionView.EmptyView>
+                    <Label Text="Noch keine Geraete gefunden."
+                           HorizontalTextAlignment="Center"
+                           TextColor="Gray" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="ble:ThingyDeviceInfo">
+                        <Grid Padding="10"
+                              ColumnDefinitions="*,Auto"
+                              RowDefinitions="Auto,Auto">
+                            <Label Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding Name}"
+                                   FontAttributes="Bold" />
+
+                            <Label Grid.Row="1"
+                                   Grid.Column="0"
+                                   Text="{Binding DeviceId}"
+                                   FontSize="11"
+                                   TextColor="Gray" />
+
+                            <Label Grid.Row="0"
+                                   Grid.Column="1"
+                                   Grid.RowSpan="2"
+                                   Text="{Binding Rssi, StringFormat='RSSI {0}'}"
+                                   VerticalTextAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>

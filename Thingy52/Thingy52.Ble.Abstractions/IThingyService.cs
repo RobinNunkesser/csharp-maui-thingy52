@@ -4,6 +4,10 @@ public interface IThingyService
 {
     Task<bool> EnsureAccess();
 
+    Task<IReadOnlyList<ThingyDeviceInfo>> ScanThingyDevices(TimeSpan scanWindow, CancellationToken cancellationToken = default);
+
+    Task<bool> ConnectToDevice(string deviceId, CancellationToken cancellationToken = default);
+
     bool IsScanning { get; }
 
     bool HasConnectedThingy { get; }
