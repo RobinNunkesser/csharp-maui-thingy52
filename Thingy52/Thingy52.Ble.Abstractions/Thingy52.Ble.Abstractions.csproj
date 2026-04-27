@@ -12,4 +12,8 @@
     <PackageTags>ble;maui;thingy52;abstractions</PackageTags>
     <Description>BLE abstractions for Thingy52 and future BLE MAUI apps.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../../../packages/dotnet/nuget-bt/src/Italbytz.Bt.Abstractions/Italbytz.Bt.Abstractions.csproj" />
+  </ItemGroup>
 </Project>
