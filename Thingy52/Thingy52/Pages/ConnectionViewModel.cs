@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Italbytz.Bt.Abstractions;
 using Thingy52.Ble.Abstractions;
 using INavigationService = Thingy52.Services.INavigationService;
 
@@ -16,7 +17,7 @@ public class ConnectionViewModel : INotifyPropertyChanged
     private string _statusText = "Bereit zum Scan.";
     private string _connectedDeviceText = "Kein Geraet verbunden";
     private bool _hasConnectedThingy;
-    private ThingyDeviceInfo? _selectedDevice;
+    private BtDeviceInfo? _selectedDevice;
 
     public ConnectionViewModel(
         INavigationService navigationService,
@@ -24,7 +25,7 @@ public class ConnectionViewModel : INotifyPropertyChanged
     {
         _navigationService = navigationService;
         _thingyService = thingyService;
-        Devices = new ObservableCollection<ThingyDeviceInfo>();
+        Devices = new ObservableCollection<BtDeviceInfo>();
         ScanCommand = new Command(async () => await ScanDevices(), () => !IsScanning && !IsConnecting);
         ConnectCommand = new Command(async () => await ConnectSelected(), () => !IsScanning && !IsConnecting && SelectedDevice is not null);
         _ = ScanDevices();
@@ -76,9 +77,9 @@ public class ConnectionViewModel : INotifyPropertyChanged
         set => SetField(ref _connectedDeviceText, value);
     }
 
-    public ObservableCollection<ThingyDeviceInfo> Devices { get; }
+    public ObservableCollection<BtDeviceInfo> Devices { get; }
 
-    public ThingyDeviceInfo? SelectedDevice
+    public BtDeviceInfo? SelectedDevice
     {
         get => _selectedDevice;
         set
