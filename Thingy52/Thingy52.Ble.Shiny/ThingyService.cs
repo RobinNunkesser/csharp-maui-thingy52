@@ -1,6 +1,7 @@
 using Shiny;
 using Shiny.BluetoothLE;
 using System.Reactive.Linq;
+using Italbytz.Bt.Abstractions;
 using Thingy52.Ble.Abstractions;
 using AbsBleServiceInfo = Thingy52.Ble.Abstractions.BleServiceInfo;
 using AbsBleCharacteristicInfo = Thingy52.Ble.Abstractions.BleCharacteristicInfo;
@@ -32,9 +33,9 @@ public class ThingyService : IThingyService
 
     public string? ConnectedThingyName => _thingy?.Name;
 
-    public async Task<IReadOnlyList<ThingyDeviceInfo>> ScanThingyDevices(TimeSpan scanWindow, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<BtDeviceInfo>> ScanThingyDevices(TimeSpan scanWindow, CancellationToken cancellationToken = default)
     {
-        var devices = new Dictionary<string, ThingyDeviceInfo>(StringComparer.OrdinalIgnoreCase);
+        var devices = new Dictionary<string, BtDeviceInfo>(StringComparer.OrdinalIgnoreCase);
         using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeoutSource.CancelAfter(scanWindow);
 
@@ -47,7 +48,7 @@ public class ThingyService : IThingyService
 
                 var deviceId = result.Peripheral.Uuid;
                 var name = result.Peripheral.Name ?? "Thingy";
-                devices[deviceId] = new ThingyDeviceInfo(deviceId, name, result.Rssi);
+                devices[deviceId] = new BtDeviceInfo(deviceId, name, result.Rssi);
             });
 
         try
