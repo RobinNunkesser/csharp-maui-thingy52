@@ -1,10 +1,12 @@
+using Italbytz.Bt.Abstractions;
+
 namespace Thingy52.Ble.Abstractions;
 
 public interface IThingyService
 {
     Task<bool> EnsureAccess();
 
-    Task<IReadOnlyList<ThingyDeviceInfo>> ScanThingyDevices(TimeSpan scanWindow, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<BtDeviceInfo>> ScanThingyDevices(TimeSpan scanWindow, CancellationToken cancellationToken = default);
 
     Task<bool> ConnectToDevice(string deviceId, CancellationToken cancellationToken = default);
 
