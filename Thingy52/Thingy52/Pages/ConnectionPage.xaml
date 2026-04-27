@@ -3,7 +3,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Thingy52"
-             xmlns:ble="clr-namespace:Thingy52.Ble.Abstractions;assembly=Thingy52.Ble.Abstractions"
+             xmlns:ble="clr-namespace:Italbytz.Bt.Abstractions;assembly=Italbytz.Bt.Abstractions"
              x:DataType="local:ConnectionViewModel"
              x:Class="Thingy52.ConnectionPage">
     <ContentPage.Content>
@@ -43,7 +43,7 @@
                 </CollectionView.EmptyView>
 
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="ble:ThingyDeviceInfo">
+                    <DataTemplate x:DataType="ble:BtDeviceInfo">
                         <Grid Padding="10"
                               ColumnDefinitions="*,Auto"
                               RowDefinitions="Auto,Auto">
