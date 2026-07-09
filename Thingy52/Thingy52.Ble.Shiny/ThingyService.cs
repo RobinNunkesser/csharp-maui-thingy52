@@ -231,17 +231,24 @@ public class ThingyService : IThingyService
         if (_thingy is null)
             return null;
 
-        await ConnectIfNotConnected();
+        try
+        {
+            await ConnectIfNotConnected();
 
-        var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
-        var characteristic = characteristics.FirstOrDefault(c =>
-            string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
+            var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
+            var characteristic = characteristics.FirstOrDefault(c =>
+                string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
 
-        if (characteristic is null || !characteristic.CanRead())
+            if (characteristic is null || !characteristic.CanRead())
+                return null;
+
+            var result = await _thingy.ReadCharacteristicAsync(characteristic);
+            return result.Data;
+        }
+        catch
+        {
             return null;
-
-        var result = await _thingy.ReadCharacteristicAsync(characteristic);
-        return result.Data;
+        }
     }
 
     public async Task<bool> WriteCharacteristic(string serviceUuid, string characteristicUuid, byte[] data)
@@ -249,17 +256,17 @@ public class ThingyService : IThingyService
         if (_thingy is null || data.Length == 0)
             return false;
 
-        await ConnectIfNotConnected();
-
-        var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
-        var characteristic = characteristics.FirstOrDefault(c =>
-            string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
-
-        if (characteristic is null)
-            return false;
-
         try
         {
+            await ConnectIfNotConnected();
+
+            var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
+            var characteristic = characteristics.FirstOrDefault(c =>
+                string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
+
+            if (characteristic is null)
+                return false;
+
             await _thingy.WriteCharacteristic(characteristic, data);
             return true;
         }
@@ -274,21 +281,28 @@ public class ThingyService : IThingyService
         if (_thingy is null)
             return null;
 
-        await ConnectIfNotConnected();
+        try
+        {
+            await ConnectIfNotConnected();
 
-        var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
-        var characteristic = characteristics.FirstOrDefault(c =>
-            string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
+            var characteristics = await _thingy.GetCharacteristics(serviceUuid).FirstAsync();
+            var characteristic = characteristics.FirstOrDefault(c =>
+                string.Equals(c.Uuid, characteristicUuid, StringComparison.OrdinalIgnoreCase));
 
-        if (characteristic is null || !characteristic.CanNotify())
+            if (characteristic is null || !characteristic.CanNotify())
+                return null;
+
+            return _thingy.NotifyCharacteristic(characteristic)
+                .Subscribe(result =>
+                {
+                    if (result.Data is not null)
+                        onData(result.Data);
+                });
+        }
+        catch
+        {
             return null;
-
-        return _thingy.NotifyCharacteristic(characteristic)
-            .Subscribe(result =>
-            {
-                if (result.Data is not null)
-                    onData(result.Data);
-            });
+        }
     }
 
     private async Task ConnectIfNotConnected()

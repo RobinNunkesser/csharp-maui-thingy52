@@ -19,9 +19,18 @@
         <ApplicationVersion>1</ApplicationVersion>
 
         <ShinyVersion>3.3.3</ShinyVersion>
+        <ThingyBleBackend Condition="'$(ThingyBleBackend)' == ''">Shiny</ThingyBleBackend>
 
         <!--slower build, faster runtime in DEBUG-->
         <!-- <_MauiForceXamlCForDebug Condition="'$(Configuration)' == 'Debug'">true</_MauiForceXamlCForDebug> -->
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(ThingyBleBackend)' == 'PluginBle'">
+        <DefineConstants>$(DefineConstants);BLE_BACKEND_PLUGINBLE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(ThingyBleBackend)' != 'PluginBle'">
+        <DefineConstants>$(DefineConstants);BLE_BACKEND_SHINY</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
@@ -59,6 +68,7 @@
 
         <UseHardenedRuntime Condition="'$(Configuration)' == 'Release'">true</UseHardenedRuntime>
         <RuntimeIdentifiers Condition="'$(Configuration)' == 'Debug'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+        <UseInterpreter Condition="'$(Configuration)' == 'Debug'">true</UseInterpreter>
         <!-- MacCatalyst workaround: statischer Registrar verhindert Laufzeitfehler mit Shiny/BLE -->
         <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
     </PropertyGroup>
@@ -124,6 +134,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Thingy52.Ble.Abstractions\Thingy52.Ble.Abstractions.csproj"/>
+        <ProjectReference Include="..\Thingy52.Ble.PluginBle\Thingy52.Ble.PluginBle.csproj"/>
         <ProjectReference Include="..\Thingy52.Ble.Shiny\Thingy52.Ble.Shiny.csproj"/>
     </ItemGroup>
 

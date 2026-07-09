@@ -1,5 +1,6 @@
 ﻿using Thingy52.Services;
 using Thingy52.Ble.Abstractions;
+using Thingy52.Ble.PluginBle;
 using Thingy52.Ble.Shiny;
 using INavigationService = Thingy52.Services.INavigationService;
 
@@ -12,7 +13,7 @@ public static class MauiProgram
         return MauiApp
             .CreateBuilder()
             .UseMauiApp<App>()
-            .UseThingyShinyBle()
+            .UseConfiguredThingyBle()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -20,6 +21,15 @@ public static class MauiProgram
             })
             .RegisterAppServices()
             .Build();
+    }
+
+    private static MauiAppBuilder UseConfiguredThingyBle(this MauiAppBuilder builder)
+    {
+#if BLE_BACKEND_PLUGINBLE
+        return builder.UseThingyPluginBle();
+#else
+        return builder.UseThingyShinyBle();
+#endif
     }
 
 
