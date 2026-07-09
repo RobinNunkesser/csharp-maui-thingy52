@@ -26,9 +26,18 @@ public partial class SoundPage : ContentPage
     private async void PlayToneClicked(object sender, EventArgs e)
         => await _vm.PlayToneAsync();
 
+    private async void ToggleMicrophoneBridgeClicked(object sender, EventArgs e)
+        => await _vm.ToggleMicrophoneBridgeAsync();
+
     private async void OpenSoundServiceClicked(object sender, EventArgs e)
     {
         var uuid = Uri.EscapeDataString(ThingyServiceCatalog.SoundServiceUuid);
         await Shell.Current.GoToAsync($"BleCharacteristicsPage?serviceUuid={uuid}");
+    }
+
+    protected override async void OnDisappearing()
+    {
+        base.OnDisappearing();
+        await _vm.StopReceivingMicrophoneAsync();
     }
 }

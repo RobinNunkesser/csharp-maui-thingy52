@@ -82,6 +82,40 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- ══ Thingy-Mikrofon -> App-Audio ═══════ -->
+                <Border StrokeThickness="1" Stroke="#D9D9D9" Padding="14">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Thingy-Mikrofon -> App-Audio" FontSize="15" FontAttributes="Bold"/>
+                        <Label Text="ADPCM wird in der App dekodiert und direkt wiedergegeben."
+                               FontSize="11"
+                               TextColor="Gray"/>
+
+                        <Button Text="{Binding MicrophoneToggleText}"
+                                Clicked="ToggleMicrophoneBridgeClicked"
+                                BackgroundColor="#0071C5"
+                                TextColor="White"/>
+
+                        <Label Text="{Binding MicrophoneBridgeStatus}"
+                               FontSize="12"
+                               TextColor="Gray"/>
+
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="4">
+                            <Label Grid.Row="0" Grid.Column="0" Text="Pakete" FontSize="11" TextColor="Gray"/>
+                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding MicrophonePackets}" FontSize="11" TextColor="Gray"/>
+
+                            <Label Grid.Row="1" Grid.Column="0" Text="Frames" FontSize="11" TextColor="Gray"/>
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding MicrophoneFrames}" FontSize="11" TextColor="Gray"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Text="Bytes" FontSize="11" TextColor="Gray"/>
+                            <Label Grid.Row="2" Grid.Column="1" Text="{Binding MicrophoneBytes}" FontSize="11" TextColor="Gray"/>
+
+                            <Label Grid.Row="3" Grid.Column="0" Text="RMS" FontSize="11" TextColor="Gray"/>
+                            <Label Grid.Row="3" Grid.Column="1" Text="{Binding MicrophoneRms}" FontSize="11" TextColor="Gray"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- ══ BLE Browser ══════════════════════════ -->
                 <Button Text="Alle Sound-Characteristics"
                         Clicked="OpenSoundServiceClicked"

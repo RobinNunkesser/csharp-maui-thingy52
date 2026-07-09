@@ -4,10 +4,11 @@ using Thingy52.Ble.Abstractions;
 
 namespace Thingy52;
 
-public class SoundViewModel : INotifyPropertyChanged
+public class SoundViewModel : INotifyPropertyChanged, IDisposable
 {
     private const byte SpeakerModeTone = 0x01;
     private const byte SpeakerModeEffect = 0x03;
+    private const byte SpeakerModePcm = 0x02;
     private const byte MicrophoneModeAdpcm = 0x01;
 
     // Sound effect names mapped to 0-based index (per iOS library ThingySoundEffect)
@@ -25,12 +26,67 @@ public class SoundViewModel : INotifyPropertyChanged
     ];
 
     private readonly IThingyService _thingyService;
+    private readonly ThingyAppAudioOutput _appAudioOutput;
+    private readonly ThingyAdpcmDecoder _adpcmDecoder = new();
+    private IDisposable? _microphoneSubscription;
 
     private string _status = "Modus zuerst setzen, dann Effekt spielen.";
     public string Status
     {
         get => _status;
         set => SetField(ref _status, value);
+    }
+
+    private bool _isReceivingMicrophone;
+    public bool IsReceivingMicrophone
+    {
+        get => _isReceivingMicrophone;
+        set
+        {
+            if (SetField(ref _isReceivingMicrophone, value))
+            {
+                OnPropertyChanged(nameof(MicrophoneToggleText));
+            }
+        }
+    }
+
+    public string MicrophoneToggleText => IsReceivingMicrophone
+        ? "Thingy-Mikrofon stoppen"
+        : "Thingy-Mikrofon starten";
+
+    private string _microphoneBridgeStatus = "Bridge inaktiv.";
+    public string MicrophoneBridgeStatus
+    {
+        get => _microphoneBridgeStatus;
+        set => SetField(ref _microphoneBridgeStatus, value);
+    }
+
+    private int _microphonePackets;
+    public int MicrophonePackets
+    {
+        get => _microphonePackets;
+        set => SetField(ref _microphonePackets, value);
+    }
+
+    private int _microphoneFrames;
+    public int MicrophoneFrames
+    {
+        get => _microphoneFrames;
+        set => SetField(ref _microphoneFrames, value);
+    }
+
+    private int _microphoneBytes;
+    public int MicrophoneBytes
+    {
+        get => _microphoneBytes;
+        set => SetField(ref _microphoneBytes, value);
+    }
+
+    private string _microphoneRms = "-";
+    public string MicrophoneRms
+    {
+        get => _microphoneRms;
+        set => SetField(ref _microphoneRms, value);
     }
 
     // ── Tone ─────────────────────────────────────────────────
@@ -61,6 +117,7 @@ public class SoundViewModel : INotifyPropertyChanged
     public SoundViewModel(IThingyService thingyService)
     {
         _thingyService = thingyService;
+        _appAudioOutput = ThingyAppAudioOutput.Create();
     }
 
     // ── Commands ─────────────────────────────────────────────
@@ -134,6 +191,72 @@ public class SoundViewModel : INotifyPropertyChanged
             : "Fehler beim Schreiben.";
     }
 
+    public async Task ToggleMicrophoneBridgeAsync()
+    {
+        if (IsReceivingMicrophone)
+        {
+            await StopReceivingMicrophoneAsync();
+            return;
+        }
+
+        await StartReceivingMicrophoneAsync();
+    }
+
+    public async Task StartReceivingMicrophoneAsync()
+    {
+        if (!_thingyService.HasConnectedThingy)
+        {
+            MicrophoneBridgeStatus = "Nicht verbunden.";
+            return;
+        }
+
+        if (IsReceivingMicrophone)
+            return;
+
+        var configured = await EnsureMicrophoneModeAdpcmAsync();
+        if (!configured)
+        {
+            MicrophoneBridgeStatus = "Mikrofonmodus ADPCM konnte nicht gesetzt werden.";
+            return;
+        }
+
+        if (!_appAudioOutput.IsSupported)
+        {
+            MicrophoneBridgeStatus = "App-Audioausgabe auf dieser Plattform nicht unterstuetzt.";
+            return;
+        }
+
+        _adpcmDecoder.Reset();
+        ResetMicrophoneStats();
+        _appAudioOutput.Start();
+
+        var subscription = await _thingyService.SubscribeCharacteristic(
+            ThingyServiceCatalog.SoundServiceUuid,
+            ThingyServiceCatalog.SoundMicrophoneCharacteristicUuid,
+            OnMicrophonePayload);
+
+        if (subscription is null)
+        {
+            _appAudioOutput.Stop();
+            MicrophoneBridgeStatus = "Mikrofon-Notifications konnten nicht gestartet werden.";
+            return;
+        }
+
+        _microphoneSubscription = subscription;
+        IsReceivingMicrophone = true;
+        MicrophoneBridgeStatus = "Thingy-Mikrofon -> App-Audio aktiv.";
+    }
+
+    public Task StopReceivingMicrophoneAsync()
+    {
+        _microphoneSubscription?.Dispose();
+        _microphoneSubscription = null;
+        _appAudioOutput.Stop();
+        IsReceivingMicrophone = false;
+        MicrophoneBridgeStatus = "Thingy-Mikrofon -> App-Audio gestoppt.";
+        return Task.CompletedTask;
+    }
+
     private async Task<bool> EnsureSpeakerModeAsync(byte desiredMode, bool forceWrite = false)
     {
         if (!_thingyService.HasConnectedThingy)
@@ -162,6 +285,78 @@ public class SoundViewModel : INotifyPropertyChanged
         // Give firmware a tiny moment before the next speaker write.
         await Task.Delay(120);
         return true;
+    }
+
+    private async Task<bool> EnsureMicrophoneModeAdpcmAsync()
+    {
+        if (!_thingyService.HasConnectedThingy)
+            return false;
+
+        var currentConfig = await _thingyService.ReadCharacteristic(
+            ThingyServiceCatalog.SoundServiceUuid,
+            ThingyServiceCatalog.SoundConfigCharacteristicUuid);
+
+        if (currentConfig is { Length: >= 2 } && currentConfig[1] == MicrophoneModeAdpcm)
+            return true;
+
+        var payload = new byte[] { SpeakerModePcm, MicrophoneModeAdpcm };
+        var writeOk = await _thingyService.WriteCharacteristic(
+            ThingyServiceCatalog.SoundServiceUuid,
+            ThingyServiceCatalog.SoundConfigCharacteristicUuid,
+            payload);
+
+        if (!writeOk)
+            return false;
+
+        await Task.Delay(120);
+        return true;
+    }
+
+    private void OnMicrophonePayload(byte[] payload)
+    {
+        var pcm16 = _adpcmDecoder.Decode(payload);
+        if (pcm16.Length == 0)
+            return;
+
+        _appAudioOutput.EnqueuePcm16(pcm16);
+
+        var rms = CalculateRms(pcm16);
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            MicrophonePackets += 1;
+            MicrophoneBytes += payload.Length;
+            MicrophoneFrames += 1;
+            MicrophoneRms = rms.ToString("F1");
+        });
+    }
+
+    private static double CalculateRms(short[] samples)
+    {
+        if (samples.Length == 0)
+            return 0;
+
+        var sum = 0.0;
+        foreach (var sample in samples)
+        {
+            sum += sample * sample;
+        }
+
+        return Math.Sqrt(sum / samples.Length);
+    }
+
+    private void ResetMicrophoneStats()
+    {
+        MicrophonePackets = 0;
+        MicrophoneBytes = 0;
+        MicrophoneFrames = 0;
+        MicrophoneRms = "-";
+    }
+
+    public void Dispose()
+    {
+        _microphoneSubscription?.Dispose();
+        _microphoneSubscription = null;
+        _appAudioOutput.Stop();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
